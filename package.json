@@ -1,0 +1,19 @@
+{
+  "name": "svgworldmap",
+  "description": "A detailed SVG world map including contested territories.",
+  "version": "0.0.1",
+  "private": false,
+  "license": "MIT",
+  "keywords": [
+    "svg",
+    "world",
+    "map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StephanWagner/svgWorldMap.git"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "scripts": {}
+}
