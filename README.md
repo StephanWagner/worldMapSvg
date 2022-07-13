@@ -27,7 +27,7 @@ The maps were created using Adobe Illustrator with the help of the following map
   https://en.wikipedia.org/wiki/Miller_cylindrical_projection#/media/File:Miller_with_Tissot's_Indicatrices_of_Distortion.svg
 
 - Library of Congress: Standard time zones of the world\
-  https://www.loc.gov/item/2012592861
+  https://www.loc.gov/item/2012592861\
   https://maps.lib.utexas.edu/maps/world_maps/timezones_ref00.pdf
 
 - Google Maps\
