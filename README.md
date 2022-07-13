@@ -18,9 +18,9 @@ https://stephanwagner.me
 
 ---
 
-## Attribution
+## Sources
 
-The maps were created using Adobe Illustrator with the help of the following map material:
+The maps are created using Adobe Illustrator with the help of the following map material:
 
 - Wikipedia: Miller cylindrical projection\
   https://en.wikipedia.org/wiki/Miller_cylindrical_projection\
