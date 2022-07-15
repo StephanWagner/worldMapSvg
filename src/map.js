@@ -4,14 +4,7 @@ const fs = require("fs");
 
 try {
   // Map data
-
-  console.log(__dirname);
-
   const data = fs.readFileSync(__dirname + "/map.svg", "utf8");
-
-  // Regular expression to match paths
-  const regex =
-    /<path id="path_x5F_([A-Z-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
   // File count
   let countryFileCount = 0;
@@ -25,14 +18,18 @@ try {
     yMax: 0,
   };
 
-  // Process map paths
+  // Regular expression to match country paths
+  const regex =
+    /<path id="path_x5F_([A-Z-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+
+  // Process country map paths
   for (const match of data.matchAll(regex)) {
     // Get the id
     const id = match[1];
 
     // Clean up path
     let path = match[2];
-    path = path.replace(/  |\t|\r\n|\n|\r/gm, "");
+    path = cleanUpPath(path);
 
     // Get viewBox
     var viewBox = getViewBox(path);
@@ -85,6 +82,23 @@ try {
   let worldMapFileContent = getSvgStart(worldMapViewBox);
   worldMapFileContent += "\n";
   worldMapFileContent += worldFileContent;
+
+  // Regular expression to match border paths
+  const regexBorders =
+    /<path id="border_x5F_([A-Z-]+)[_A-Za-z0-9]*" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+
+  // Process border paths
+  for (const match of data.matchAll(regexBorders)) {
+    const borderPath = cleanUpPath(match[2]);
+
+    worldMapFileContent +=
+      '  <path fill="none" stroke="#FFFFFF" stroke-width="0.05" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
+      borderPath +
+      '"/>';
+    worldMapFileContent += "\n";
+  }
+
+  // Close world map file
   worldMapFileContent += "</svg>";
 
   // Write world map file
@@ -186,4 +200,9 @@ function getViewBox(d) {
     yMin,
     yMax,
   };
+}
+
+// Clean up a path
+function cleanUpPath(path) {
+  return path.replace(/  |\t|\r\n|\n|\r/gm, "");
 }
