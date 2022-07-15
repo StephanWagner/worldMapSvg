@@ -42,7 +42,7 @@ try {
     fileContent += svgFooter;
 
     // Write file
-    fs.writeFileSync("./maps/countries/" + id + ".svg", fileContent);
+    fs.writeFileSync("../maps/countries/" + id + ".svg", fileContent);
 
     // Count generated files
     fileCount++;
