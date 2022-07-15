@@ -59,6 +59,7 @@ try {
     countryFileContent += '  <path d="' + path + '"/>';
     countryFileContent += "\n";
     countryFileContent += "</svg>";
+    countryFileContent += "\n";
 
     // Write country file
     fs.writeFileSync(
@@ -110,6 +111,7 @@ try {
 
   // Close world map file
   worldMapFileContent += "</svg>";
+  worldMapFileContent += "\n";
 
   // Write world map file
   fs.writeFileSync(__dirname + "/../maps/world-map.svg", worldMapFileContent);
