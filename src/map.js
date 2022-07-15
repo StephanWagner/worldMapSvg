@@ -2,11 +2,6 @@
 
 const fs = require("fs");
 
-// SVG data
-const svgHeader =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="{X} {Y} {W} {H}">';
-const svgFooter = "</svg>";
-
 try {
   // Map data
 
@@ -16,12 +11,21 @@ try {
 
   // Regular expression to match paths
   const regex =
-    /<path id="path_x5F_([A-Z-]+)" fill="#[A-Z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+    /<path id="path_x5F_([A-Z-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
   // File count
-  let fileCount = 0;
+  let countryFileCount = 0;
 
-  // Loop through map paths
+  // Word map data
+  let worldFileContent = "";
+  let worldMapViewBox = {
+    xMin: 10000,
+    xMax: 0,
+    yMin: 10000,
+    yMax: 0,
+  };
+
+  // Process map paths
   for (const match of data.matchAll(regex)) {
     // Get the id
     const id = match[1];
@@ -33,32 +37,79 @@ try {
     // Get viewBox
     var viewBox = getViewBox(path);
 
-    // Generate file content
-    let fileContent = svgHeader;
-    fileContent = fileContent.replace(/{X}/g, viewBox.xMin);
-    fileContent = fileContent.replace(/{Y}/g, viewBox.yMin);
-    fileContent = fileContent.replace(/{W}/g, viewBox.width);
-    fileContent = fileContent.replace(/{H}/g, viewBox.height);
-    fileContent += "\n";
-    fileContent += '  <path data-id="' + id + '" d="' + path + '"/>';
-    fileContent += "\n";
-    fileContent += svgFooter;
+    // Update world map viewBox
+    if (viewBox.xMin < worldMapViewBox.xMin) {
+      worldMapViewBox.xMin = viewBox.xMin;
+    }
 
-    // Write file
-    fs.writeFileSync(__dirname + "/../maps/countries/" + id + ".svg", fileContent);
+    if (viewBox.xMax > worldMapViewBox.xMax) {
+      worldMapViewBox.xMax = viewBox.xMax;
+    }
+
+    if (viewBox.yMin < worldMapViewBox.yMin) {
+      worldMapViewBox.yMin = viewBox.yMin;
+    }
+
+    if (viewBox.yMax > worldMapViewBox.yMax) {
+      worldMapViewBox.yMax = viewBox.yMax;
+    }
+
+    // Generate country file content
+    let countryFileContent = getSvgStart(viewBox);
+    countryFileContent += "\n";
+    countryFileContent += '  <path d="' + path + '"/>';
+    countryFileContent += "\n";
+    countryFileContent += "</svg>";
+
+    // Write country file
+    fs.writeFileSync(
+      __dirname + "/../maps/countries/" + id + ".svg",
+      countryFileContent
+    );
+
+    // Generate world file content
+    worldFileContent += '  <path data-id="' + id + '" d="' + path + '"/>';
+    worldFileContent += "\n";
 
     // Count generated files
-    fileCount++;
+    countryFileCount++;
 
-    // Log id
-    console.log(id);
+    // Country map success message
+    console.log("✓ " + id);
   }
 
-  // Success message
-  console.log(fileCount + " maps generated");
+  // Country maps success message
+  console.log(countryFileCount + " country maps generated");
+
+  // Generate world map file content
+  let worldMapFileContent = getSvgStart(worldMapViewBox);
+  worldMapFileContent += "\n";
+  worldMapFileContent += worldFileContent;
+  worldMapFileContent += "</svg>";
+
+  // Write world map file
+  fs.writeFileSync(__dirname + "/../maps/world-map.svg", worldMapFileContent);
+
+  // World map success message
+  console.log("✓ World map");
 } catch (err) {
   // Error message
   console.error(err);
+}
+
+// Get the start of the SVG with viewBox data
+function getSvgStart(viewBox) {
+  const width = (viewBox.xMax - viewBox.xMin).toFixed(3);
+  const height = (viewBox.yMax - viewBox.yMin).toFixed(3);
+
+  let svgStart =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="{X} {Y} {W} {H}">';
+
+  svgStart = svgStart.replace(/{X}/g, viewBox.xMin);
+  svgStart = svgStart.replace(/{Y}/g, viewBox.yMin);
+  svgStart = svgStart.replace(/{W}/g, width);
+  svgStart = svgStart.replace(/{H}/g, height);
+  return svgStart;
 }
 
 // Calculate SVG viewBox
@@ -128,12 +179,8 @@ function getViewBox(d) {
   xMax = xMax.toFixed(3);
   yMin = yMin.toFixed(3);
   yMax = yMax.toFixed(3);
-  width = (xMax - xMin).toFixed(3);
-  height = (yMax - yMin).toFixed(3);
 
   return {
-    width,
-    height,
     xMin,
     xMax,
     yMin,
