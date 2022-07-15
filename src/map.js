@@ -6,8 +6,10 @@ try {
   // Map data
   const data = fs.readFileSync(__dirname + "/map.svg", "utf8");
 
-  // File count
-  let countryFileCount = 0;
+  // Counters
+  let countryCount = 0;
+  let borderCount = 0;
+  let combinedMapsCount = 0;
 
   // Word map data
   let worldFileContent = "";
@@ -69,14 +71,11 @@ try {
     worldFileContent += "\n";
 
     // Count generated files
-    countryFileCount++;
+    countryCount++;
 
     // Country map success message
-    console.log("✓ " + id);
+    console.log("\x1b[36m", "✓ " + id);
   }
-
-  // Country maps success message
-  console.log(countryFileCount + " country maps generated");
 
   // Generate world map file content
   let worldMapFileContent = getSvgStart(worldMapViewBox);
@@ -96,6 +95,8 @@ try {
       borderPath +
       '"/>';
     worldMapFileContent += "\n";
+
+    borderCount++;
   }
 
   // Close world map file
@@ -104,9 +105,15 @@ try {
   // Write world map file
   fs.writeFileSync(__dirname + "/../maps/world-map.svg", worldMapFileContent);
 
+  combinedMapsCount++;
+
   // World map success messages
-  console.log("✓ World map");
-  console.log("1 world map generated");
+  console.log("\x1b[36m", "✓ World map");
+
+  // Success messages
+  console.log("\x1b[32m", countryCount + " individual maps generated");
+  console.log("\x1b[32m", borderCount + " borders added to world map");
+  console.log("\x1b[32m", combinedMapsCount + " combined maps generated");
 } catch (err) {
   // Error message
   console.error(err);
