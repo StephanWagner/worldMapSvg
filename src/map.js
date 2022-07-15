@@ -67,8 +67,7 @@ try {
     );
 
     // Generate world file content
-    worldFileContent +=
-      '  <path data-map data-id="' + id + '" d="' + path + '"/>';
+    worldFileContent += '  <path data-map="' + id + '" d="' + path + '"/>';
     worldFileContent += "\n";
 
     // Count generated files
@@ -95,11 +94,11 @@ try {
 
     let borderIdsData = "";
     borderIds.forEach(function (borderId) {
-      borderIdsData += " data-border-" + borderId;
+      borderIdsData += " data-border-" + borderId + '="true"';
     });
 
     worldMapFileContent +=
-      "  <path data-border" +
+      "  <path" +
       borderIdsData +
       ' fill="none" stroke="#FFFFFF" stroke-width="0.05" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
       borderPath +
