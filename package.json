@@ -16,5 +16,7 @@
   },
   "devDependencies": {},
   "dependencies": {},
-  "scripts": {}
+  "scripts": {
+    "build": "node ./src/map.js"
+  }
 }

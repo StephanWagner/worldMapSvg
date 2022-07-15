@@ -9,7 +9,10 @@ const svgFooter = "</svg>";
 
 try {
   // Map data
-  const data = fs.readFileSync("./map.svg", "utf8");
+
+  console.log(__dirname);
+
+  const data = fs.readFileSync(__dirname + "/map.svg", "utf8");
 
   // Regular expression to match paths
   const regex =
@@ -42,7 +45,7 @@ try {
     fileContent += svgFooter;
 
     // Write file
-    fs.writeFileSync("../maps/countries/" + id + ".svg", fileContent);
+    fs.writeFileSync(__dirname + "/../maps/countries/" + id + ".svg", fileContent);
 
     // Count generated files
     fileCount++;
