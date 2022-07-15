@@ -12,9 +12,9 @@ https://stephanwagner.me
 
 ---
 
-## Development
+## Building the maps
 
-**This project is in development**
+The map paths in Illustrator need to be named as `path_ID` with `ID` being the [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Save the map file as `map.svg` in the `src` folder. Then you can run the script `npm run build` to automatically generate the SVG maps to the folder `maps`.
 
 ---
 
