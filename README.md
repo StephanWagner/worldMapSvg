@@ -2,10 +2,6 @@
 
 A detailed SVG world map and single country maps including contested territories and autonomous regions in the Miller cylindrical projection.
 
-<div style="background: #fff no-repeat center center / contain url(./maps/world-map.svg); border-radius: 16px; margin: 24px 0">
-  <div style="padding-top: calc(76 / 122 * 100%)"></div>
-</div>
-
 ---
 
 ## Author
