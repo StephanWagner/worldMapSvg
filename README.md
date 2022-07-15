@@ -2,6 +2,10 @@
 
 A detailed SVG world map and single country maps including contested territories and autonomous regions in the Miller cylindrical projection.
 
+<div style="background: #fff no-repeat center center / contain url(./maps/world-map.svg); border-radius: 16px; margin: 24px 0">
+  <div style="padding-top: calc(76 / 122 * 100%)"></div>
+</div>
+
 ---
 
 ## Author
@@ -14,13 +18,15 @@ https://stephanwagner.me
 
 ## Building the maps
 
-The map paths in Adobe Illustrator need to be named `path_ID` with `ID` being the [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Save the map file as `map.svg` in the `src` folder with a precision of 3 decimal places. Then you can run the script `npm run build` to automatically generate the SVG maps into the folder `maps`.
+The map paths in the Adobe Illustrator file `src/map.ai` need to be named `path_ID` with `ID` being the [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Save the map file as `map.svg` with a precision of 3 decimal places. Then you can run the script `npm run build` to automatically generate the SVG maps into the folder `maps`.
+
+Borders between countries and territories need to be named `border_ID1|ID2` and need to be unique to two countries.
 
 ---
 
 ## Sources
 
-The maps are created using Adobe Illustrator with the help of the following map material:
+The maps are created using Adobe Illustrator with the help of following public map material:
 
 - Wikipedia: Miller cylindrical projection\
   https://en.wikipedia.org/wiki/Miller_cylindrical_projection\
