@@ -67,7 +67,8 @@ try {
     );
 
     // Generate world file content
-    worldFileContent += '  <path data-id="' + id + '" d="' + path + '"/>';
+    worldFileContent +=
+      '  <path data-map data-id="' + id + '" d="' + path + '"/>';
     worldFileContent += "\n";
 
     // Count generated files
@@ -84,14 +85,23 @@ try {
 
   // Regular expression to match border paths
   const regexBorders =
-    /<path id="border_x5F_([A-Z-]+)[_A-Za-z0-9]*" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+    /<path id="border_x5F_([A-Za-z0-9|_]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
   // Process border paths
   for (const match of data.matchAll(regexBorders)) {
     const borderPath = cleanUpPath(match[2]);
+    const borderIdsStr = match[1];
+    const borderIds = borderIdsStr.split("_x7C_");
+
+    let borderIdsData = "";
+    borderIds.forEach(function (borderId) {
+      borderIdsData += " data-border-" + borderId;
+    });
 
     worldMapFileContent +=
-      '  <path fill="none" stroke="#FFFFFF" stroke-width="0.05" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
+      "  <path data-border" +
+      borderIdsData +
+      ' fill="none" stroke="#FFFFFF" stroke-width="0.05" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
       borderPath +
       '"/>';
     worldMapFileContent += "\n";
