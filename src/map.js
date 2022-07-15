@@ -104,8 +104,9 @@ try {
   // Write world map file
   fs.writeFileSync(__dirname + "/../maps/world-map.svg", worldMapFileContent);
 
-  // World map success message
+  // World map success messages
   console.log("✓ World map");
+  console.log("1 world map generated");
 } catch (err) {
   // Error message
   console.error(err);
