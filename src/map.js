@@ -138,8 +138,8 @@ function getSvgStart(viewBox) {
   let svgStart =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="{X} {Y} {W} {H}">';
 
-  svgStart = svgStart.replace(/{X}/g, viewBox.xMin);
-  svgStart = svgStart.replace(/{Y}/g, viewBox.yMin);
+  svgStart = svgStart.replace(/{X}/g, viewBox.xMin.toFixed(3));
+  svgStart = svgStart.replace(/{Y}/g, viewBox.yMin.toFixed(3));
   svgStart = svgStart.replace(/{W}/g, width);
   svgStart = svgStart.replace(/{H}/g, height);
   return svgStart;
@@ -207,11 +207,6 @@ function getViewBox(d) {
       }
     }
   });
-
-  xMin = xMin.toFixed(3);
-  xMax = xMax.toFixed(3);
-  yMin = yMin.toFixed(3);
-  yMax = yMax.toFixed(3);
 
   return {
     xMin,
