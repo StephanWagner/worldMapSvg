@@ -94,8 +94,8 @@ try {
     const borderIds = borderIdsStr.split("_x7C_");
 
     let borderIdsData = "";
-    borderIds.forEach(function (borderId) {
-      borderIdsData += " data-border-" + borderId + '="true"';
+    borderIds.forEach(function (borderId, index) {
+      borderIdsData += " data-border" + (index + 1) + '="' + borderId + '"';
     });
 
     worldMapFileContent +=
