@@ -1,4 +1,16 @@
 module.exports = {
+  moveConstantX: 1328,
+
+  combineMove: [
+    // Line Islands (Kiribati)
+    "KI-L",
+
+    // United States Minor Outlying Islands
+    "UM-76",
+    "UM-86",
+    "UM-89",
+    "UM-95"
+  ],
 
   combine: {
     // Australia
@@ -23,8 +35,6 @@ module.exports = {
     "PG-BA": "PG",
 
     // United States Minor Outlying Islands
-    // TODO center
-    // >> Get the width of the map then move
     "UM-67": "UM",
     "UM-71": "UM",
     "UM-76": "UM",
@@ -33,5 +43,9 @@ module.exports = {
     "UM-84": "UM",
     "UM-86": "UM",
     "UM-95": "UM",
+
+    // Venezuela
+    "VE": "VE",
+    "VE-O": "VE",
   },
 };

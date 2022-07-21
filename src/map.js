@@ -36,7 +36,12 @@ for (const match of data.matchAll(regex)) {
   const id = match[1];
 
   // Debug
-  // if (id != "PA") {
+  // if (
+  //   id != "KI" &&
+  //   id != "KI-G" &&
+  //   id != "KI-L" &&
+  //   id != "KI-P"
+  // ) {
   //   continue;
   // }
 
@@ -50,7 +55,14 @@ for (const match of data.matchAll(regex)) {
     if (!combineCache[combineId]) {
       combineCache[combineId] = [];
     }
-    combineCache[combineId].push(path);
+    let combinePath = path;
+
+    // TODO
+    // There are errors when moving, so KI | Kiribati
+    if (config.combineMove.indexOf(id) !== -1) {
+      combinePath = movePath(path, config.moveConstantX, 0);
+    }
+    combineCache[combineId].push(combinePath);
   }
 
   // Get viewBox
@@ -280,6 +292,7 @@ function cleanUpPath(path) {
   const paths = path.split(" ");
 
   paths.forEach(function (pathItem) {
+    // Detect empty paths
     if (
       pathItem.indexOf("l") === -1 &&
       pathItem.indexOf("h") === -1 &&
@@ -288,7 +301,74 @@ function cleanUpPath(path) {
       console.log("\x1b[31m", "✗ Error: Empty path detected");
       errorCount++;
     }
+
+    // Detect curves
+    if (pathItem.indexOf("c") > -1) {
+      console.log("\x1b[31m", "✗ Error: Curve in path detected");
+      errorCount++;
+    }
   });
 
   return path;
+}
+
+// Move a path in x direction
+function movePath(path, moveX, moveY) {
+  const paths = path.split(" ");
+
+  const regex = /([A-Za-z]+)([0-9-.,]+)/g;
+
+  const newPaths = [];
+
+  paths.forEach(function (path) {
+    let newPath = "";
+
+    for (const match of path.matchAll(regex)) {
+      const cmd = match[1];
+      let val = match[2];
+
+      val = val.replace(/-/g, ",-");
+
+      if (val.substring(0, 1) === ",") {
+        val = val.substring(1);
+      }
+      val = val.split(",");
+
+      let x;
+      let y;
+
+      switch (cmd) {
+        case "M":
+        case "L":
+          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(3) : val[0];
+          y = moveY !== 0 ? (parseFloat(val[1]) + moveY).toFixed(3) : val[1];
+          newPath += cmd + x + "," + y;
+          break;
+
+        case "H":
+          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(3) : val[0];
+          newPath += cmd + x;
+          break;
+
+        case "V":
+          y = moveY !== 0 ? (parseFloat(val[0]) + moveY).toFixed(3) : val[0];
+          newPath += cmd + y;
+
+        case "l":
+          newPath += cmd + val[0] + "," + val[1];
+          break;
+
+        case "v":
+        case "h":
+          newPath += cmd + val[0];
+          break;
+      }
+    }
+
+    newPath += "z";
+
+    newPaths.push(newPath);
+  });
+
+  return newPaths.join(" ");
 }
