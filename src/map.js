@@ -220,8 +220,17 @@ function getViewBox(d) {
 
       switch (cmd) {
         case "M":
+        case "L":
           xCur = parseFloat(values[0]);
           yCur = parseFloat(values[1]);
+          break;
+
+        case "H":
+          xCur = parseFloat(values[0]);
+          break;
+
+        case "V":
+          yCur = parseFloat(values[0]);
           break;
 
         case "l":
