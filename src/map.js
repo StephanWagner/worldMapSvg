@@ -18,9 +18,9 @@ let borderCount = 0;
 let worldFileContent = "";
 let worldMapViewBox = {
   xMin: 10000,
-  xMax: 0,
+  xMax: -10000,
   yMin: 10000,
-  yMax: 0,
+  yMax: -10000,
 };
 
 // Cache to combine maps
@@ -172,12 +172,14 @@ worldMapFileContent += "</svg>";
 worldMapFileContent += "\n";
 
 // Write world map file
-fs.writeFileSync(__dirname + "/../maps/world-map.svg", worldMapFileContent);
-
-worldCount++;
+const wordMapFilename = __dirname + "/../maps/world-map.svg";
+fs.writeFileSync(wordMapFilename, worldMapFileContent);
 
 // World map success messages
-console.log("\x1b[33m", "✓ World map");
+var fileSize = getFilesize(wordMapFilename);
+console.log("\x1b[33m", "✓ World map (" + fileSize + ")");
+
+worldCount++;
 
 // Success messages
 console.log("\x1b[32m", "✓ " + countryCount + " individual maps generated");
@@ -371,4 +373,12 @@ function movePath(path, moveX, moveY) {
   });
 
   return newPaths.join(" ");
+}
+
+// Get filesize
+function getFilesize(filename) {
+  const stats = fs.statSync(filename);
+  const fileSizeInBytes = stats.size;
+  const fileSizeInKilobytes = fileSizeInBytes / 1024;
+  return fileSizeInKilobytes.toFixed(2) + ' KB';
 }
