@@ -1,6 +1,7 @@
 #!/usr/bin/node
 
 const fs = require("fs");
+const zlib = require("zlib");
 
 const config = require("./config.js");
 
@@ -60,7 +61,7 @@ for (const match of data.matchAll(regex)) {
   }
 
   // Get viewBox
-  var viewBox = getViewBox(path);
+  const viewBox = getViewBox(path);
 
   // Update world map viewBox
   if (viewBox.xMin < worldMapViewBox.xMin) {
@@ -168,8 +169,13 @@ const wordMapFilename = __dirname + "/../maps/world.svg";
 fs.writeFileSync(wordMapFilename, worldMapFileContent);
 
 // World map success messages
-var fileSize = getFilesize(wordMapFilename);
-console.log("\x1b[33m", "✓ World map (" + fileSize + ")");
+const fileSize = getFilesize(wordMapFilename);
+const compressedFilesize = getCompressedFilesize(worldMapFileContent);
+
+console.log(
+  "\x1b[33m",
+  "✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)"
+);
 
 worldCount++;
 
@@ -371,10 +377,22 @@ function movePath(path, moveX, moveY) {
 function getFilesize(filename) {
   const stats = fs.statSync(filename);
   const filesizeInBytes = stats.size;
+  return getFilesizeWithUnits(filesizeInBytes);
+}
+
+// Get compressed filesize
+function getCompressedFilesize(data) {
+  const zippedFileData = zlib.gzipSync(data);
+  const filesize = zippedFileData.length;
+  return getFilesizeWithUnits(filesize);
+}
+
+// Get filesize with Units
+function getFilesizeWithUnits(filesizeInBytes) {
   const filesizeInKilobytes = filesizeInBytes / 1024;
 
   // Return in MB
-  if (filesizeInKilobytes > 1000) {
+  if (filesizeInKilobytes > 1024) {
     const filesizeInMegabytes = filesizeInBytes / 1024;
     return filesizeInMegabytes.toFixed(2) + " MB";
   }
