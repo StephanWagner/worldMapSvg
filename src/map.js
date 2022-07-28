@@ -15,12 +15,7 @@ let worldCount = 0;
 
 // Word map data
 let worldFileContent = "";
-let worldMapViewBox = {
-  xMin: 10000,
-  xMax: -10000,
-  yMin: 10000,
-  yMax: -10000,
-};
+let worldMapViewBox = getMinMaxObj();
 
 // Cache to combine maps
 let combineCache = {};
@@ -57,7 +52,7 @@ for (const match of data.matchAll(regex)) {
     let combinePath = path;
 
     // TODO
-    // There are errors when moving, so KI | Kiribati
+    // There are errors when moving, see KI | Kiribati
     if (config.combineMove.indexOf(id) !== -1) {
       combinePath = movePath(path, config.moveConstantX, 0);
     }
@@ -203,16 +198,22 @@ function getSvgStart(viewBox) {
   return svgStart;
 }
 
+function getMinMaxObj() {
+  return {
+    xMin: 10000,
+    xMax: -10000,
+    yMin: 10000,
+    yMax: -10000,
+  };
+}
+
 // Calculate SVG viewBox
 function getViewBox(d) {
   const paths = d.split(" ");
 
-  let xCur = 0;
-  let yCur = 0;
-  let xMin = 10000;
-  let xMax = -10000;
-  let yMin = 10000;
-  let yMax = -10000;
+  let x = 0;
+  let y = 0;
+  let boundries = getMinMaxObj();
 
   const regex = /([A-Za-z]+)([0-9-.,]+)/g;
 
@@ -231,56 +232,51 @@ function getViewBox(d) {
       switch (cmd) {
         case "M":
         case "L":
-          xCur = parseFloat(values[0]);
-          yCur = parseFloat(values[1]);
+          x = parseFloat(values[0]);
+          y = parseFloat(values[1]);
           break;
 
         case "H":
-          xCur = parseFloat(values[0]);
+          x = parseFloat(values[0]);
           break;
 
         case "V":
-          yCur = parseFloat(values[0]);
+          y = parseFloat(values[0]);
           break;
 
         case "l":
-          xCur += parseFloat(values[0]);
-          yCur += parseFloat(values[1]);
+          x += parseFloat(values[0]);
+          y += parseFloat(values[1]);
           break;
 
         case "h":
-          xCur += parseFloat(values[0]);
+          x += parseFloat(values[0]);
           break;
 
         case "v":
-          yCur += parseFloat(values[0]);
+          y += parseFloat(values[0]);
           break;
       }
 
-      if (xCur < xMin) {
-        xMin = xCur;
+      if (x < boundries.xMin) {
+        boundries.xMin = x;
       }
 
-      if (xCur > xMax) {
-        xMax = xCur;
+      if (x > boundries.xMax) {
+        boundries.xMax = x;
       }
 
-      if (yCur < yMin) {
-        yMin = yCur;
+      if (y < boundries.yMin) {
+        boundries.yMin = y;
       }
 
-      if (yCur > yMax) {
-        yMax = yCur;
+      if (y > boundries.yMax) {
+        boundries.yMax = y;
       }
     }
   });
 
-  return {
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-  };
+  return boundries;
 }
 
 // Clean up a path
@@ -374,7 +370,15 @@ function movePath(path, moveX, moveY) {
 // Get filesize
 function getFilesize(filename) {
   const stats = fs.statSync(filename);
-  const fileSizeInBytes = stats.size;
-  const fileSizeInKilobytes = fileSizeInBytes / 1024;
-  return fileSizeInKilobytes.toFixed(2) + ' KB';
+  const filesizeInBytes = stats.size;
+  const filesizeInKilobytes = filesizeInBytes / 1024;
+
+  // Return in MB
+  if (filesizeInKilobytes > 1000) {
+    const filesizeInMegabytes = filesizeInBytes / 1024;
+    return filesizeInMegabytes.toFixed(2) + " MB";
+  }
+
+  // Return in KB
+  return filesizeInKilobytes.toFixed(2) + " KB";
 }
