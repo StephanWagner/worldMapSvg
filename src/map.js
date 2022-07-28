@@ -12,7 +12,6 @@ let errorCount = 0;
 let countryCount = 0;
 let combinedCount = 0;
 let worldCount = 0;
-let borderCount = 0;
 
 // Word map data
 let worldFileContent = "";
@@ -163,8 +162,6 @@ for (const match of data.matchAll(regexBorders)) {
     borderPath +
     '"/>';
   worldMapFileContent += "\n";
-
-  borderCount++;
 }
 
 // Close world map file
@@ -185,7 +182,6 @@ worldCount++;
 console.log("\x1b[32m", "✓ " + countryCount + " individual maps generated");
 console.log("\x1b[32m", "✓ " + combinedCount + " combined maps generated");
 console.log("\x1b[32m", "✓ " + worldCount + " world maps generated");
-console.log("\x1b[32m", "✓ " + borderCount + " borders added to world map");
 
 // Errors
 if (errorCount > 0) {
