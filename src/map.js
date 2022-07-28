@@ -24,7 +24,7 @@ let combineCache = {};
 
 // Regular expression to match country paths
 const regex =
-  /<path id="map_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="map_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process country map paths
 for (const match of data.matchAll(regex)) {
