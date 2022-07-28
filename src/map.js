@@ -236,6 +236,11 @@ console.log("\x1b[32m", "✓ " + countryMapCount + " individual maps generated")
 console.log("\x1b[32m", "✓ " + combinedMapCount + " combined maps generated");
 console.log("\x1b[32m", "✓ " + worldMapCount + " world maps generated");
 
+// Done message
+const mapsDone = countryMapCount + "/" + config.totalMaps;
+const mapsDonePercent = ((countryMapCount / config.totalMaps) * 100).toFixed(2);
+console.log("\x1b[35m", "› " + mapsDone + " done (" + mapsDonePercent + "%)");
+
 // Errors
 if (errorCount > 0) {
   console.log("\x1b[31m", "✗ " + errorCount + " error: See log above");

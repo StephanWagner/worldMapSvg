@@ -1,5 +1,8 @@
 module.exports = {
-  // Stroke width for fole world-with-stroke.svg
+  // Total of maps
+  totalMaps: 344,
+
+  // Stroke width for file world-with-stroke.svg
   strokeWidth: 10,
 
   // Move amount when moving a path horizontally around the globe
@@ -14,7 +17,7 @@ module.exports = {
     "UM-76",
     "UM-86",
     "UM-89",
-    "UM-95"
+    "UM-95",
   ],
 
   // Combine paths to country
@@ -51,7 +54,7 @@ module.exports = {
     "UM-95": "UM",
 
     // Venezuela
-    "VE": "VE",
+    VE: "VE",
     "VE-O": "VE",
   },
 };
