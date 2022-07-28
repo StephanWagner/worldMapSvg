@@ -28,7 +28,7 @@ let combineCache = {};
 
 // Regular expression to match country paths
 const regex =
-  /<path id="path_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="map_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process country map paths
 for (const match of data.matchAll(regex)) {
@@ -172,7 +172,7 @@ worldMapFileContent += "</svg>";
 worldMapFileContent += "\n";
 
 // Write world map file
-const wordMapFilename = __dirname + "/../maps/world-map.svg";
+const wordMapFilename = __dirname + "/../maps/world.svg";
 fs.writeFileSync(wordMapFilename, worldMapFileContent);
 
 // World map success messages
