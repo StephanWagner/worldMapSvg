@@ -1,6 +1,11 @@
 module.exports = {
+  // Stroke width for fole world-with-stroke.svg
+  strokeWidth: 10,
+
+  // Move amount when moving a path horizontally around the globe
   moveConstantX: 1328,
 
+  // Paths that need to be moved
   combineMove: [
     // Line Islands (Kiribati)
     "KI-L",
@@ -12,6 +17,7 @@ module.exports = {
     "UM-95"
   ],
 
+  // Combine paths to country
   combine: {
     // Australia
     "AU-ML": "AU",

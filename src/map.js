@@ -10,12 +10,13 @@ const data = fs.readFileSync(__dirname + "/map.svg", "utf8");
 
 // Counters
 let errorCount = 0;
-let countryCount = 0;
-let combinedCount = 0;
-let worldCount = 0;
+let countryMapCount = 0;
+let combinedMapCount = 0;
+let worldMapCount = 0;
 
 // Word map data
 let worldFileContent = "";
+let worldFileStrokeContent = "";
 let worldMapViewBox = getMinMaxObj();
 
 // Cache to combine maps
@@ -98,15 +99,24 @@ for (const match of data.matchAll(regex)) {
   worldFileContent += '  <path data-map="' + id + '" d="' + path + '"/>';
   worldFileContent += "\n";
 
+  worldFileStrokeContent +=
+    '  <path data-map="' +
+    id +
+    '" stroke="#DDDDDD" stroke-width="' +
+    config.strokeWidth +
+    '" stroke-linecap="round" stroke-linejoin="round" d="' +
+    path +
+    '"/>';
+  worldFileStrokeContent += "\n";
+
   // Count generated files
-  countryCount++;
+  countryMapCount++;
 
   // Country map success message
   console.log("\x1b[36m", "✓ " + id);
 }
 
 // Generate combined maps
-
 for (const id in combineCache) {
   const path = combineCache[id].join(" ");
   const viewBox = getViewBox(path);
@@ -125,7 +135,7 @@ for (const id in combineCache) {
   );
 
   // Count generated files
-  combinedCount++;
+  combinedMapCount++;
 
   // Combined country map success message
   console.log("\x1b[33m", "✓ " + id);
@@ -133,8 +143,21 @@ for (const id in combineCache) {
 
 // Generate world map file content
 let worldMapFileContent = getSvgStart(worldMapViewBox);
+
+let worldMapViewBoxStroke = worldMapViewBox;
+worldMapViewBoxStroke.xMin -= config.strokeWidth / 2;
+worldMapViewBoxStroke.yMin -= config.strokeWidth / 2;
+worldMapViewBoxStroke.xMax += config.strokeWidth / 2;
+worldMapViewBoxStroke.yMax += config.strokeWidth / 2;
+let worldMapFileContentStroke = getSvgStart(worldMapViewBoxStroke);
+
 worldMapFileContent += "\n";
 worldMapFileContent += worldFileContent;
+
+worldMapFileContentStroke += "\n";
+worldMapFileContentStroke += worldFileStrokeContent;
+worldMapFileContent += "\n";
+worldMapFileContentStroke += worldFileContent;
 
 // Regular expression to match border paths
 const regexBorders =
@@ -148,25 +171,37 @@ for (const match of data.matchAll(regexBorders)) {
 
   let borderIdsData = "";
   borderIds.forEach(function (borderId, index) {
+    borderId = borderId.replace(/_[0-9]+_/, "");
     borderIdsData += " data-border" + (index + 1) + '="' + borderId + '"';
   });
 
-  worldMapFileContent +=
+  const borderPathSvg =
     "  <path" +
     borderIdsData +
     ' fill="none" stroke="#FFFFFF" stroke-width="0.05" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
     borderPath +
     '"/>';
+
+  worldMapFileContent += borderPathSvg;
   worldMapFileContent += "\n";
+
+  worldMapFileContentStroke += borderPathSvg;
+  worldMapFileContentStroke += "\n";
 }
 
 // Close world map file
 worldMapFileContent += "</svg>";
 worldMapFileContent += "\n";
 
+worldMapFileContentStroke += "</svg>";
+worldMapFileContentStroke += "\n";
+
 // Write world map file
 const wordMapFilename = __dirname + "/../maps/world.svg";
 fs.writeFileSync(wordMapFilename, worldMapFileContent);
+
+const wordMapFilenameStroke = __dirname + "/../maps/world-with-stroke.svg";
+fs.writeFileSync(wordMapFilenameStroke, worldMapFileContentStroke);
 
 // World map success messages
 const fileSize = getFilesize(wordMapFilename);
@@ -177,12 +212,29 @@ console.log(
   "✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)"
 );
 
-worldCount++;
+worldMapCount++;
+
+// Worls map with stroke success message
+const fileSizeStroke = getFilesize(wordMapFilenameStroke);
+const compressedFilesizeStroke = getCompressedFilesize(
+  worldMapFileContentStroke
+);
+
+console.log(
+  "\x1b[33m",
+  "✓ World map with stroke (" +
+    fileSizeStroke +
+    ") (" +
+    compressedFilesizeStroke +
+    " compressed)"
+);
+
+worldMapCount++;
 
 // Success messages
-console.log("\x1b[32m", "✓ " + countryCount + " individual maps generated");
-console.log("\x1b[32m", "✓ " + combinedCount + " combined maps generated");
-console.log("\x1b[32m", "✓ " + worldCount + " world maps generated");
+console.log("\x1b[32m", "✓ " + countryMapCount + " individual maps generated");
+console.log("\x1b[32m", "✓ " + combinedMapCount + " combined maps generated");
+console.log("\x1b[32m", "✓ " + worldMapCount + " world maps generated");
 
 // Errors
 if (errorCount > 0) {
