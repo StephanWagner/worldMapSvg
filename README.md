@@ -1,6 +1,6 @@
 # worldMapSvg
 
-A detailed SVG world map and single country maps including contested territories and autonomous regions in the Miller cylindrical projection.
+A detailed SVG world map and single country maps including separated maps for autonomous regions, distinct island groups and disputed territories in the Miller cylindrical projection.
 
 ---
 
