@@ -32,5 +32,8 @@ The maps are created using Adobe Illustrator with the help of following public m
   https://www.loc.gov/item/2012592861\
   https://maps.lib.utexas.edu/maps/world_maps/timezones_ref00.pdf
 
+- OpenStreetMap\
+  https://www.openstreetmap.org
+
 - Google Maps\
   https://www.google.com/maps
