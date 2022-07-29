@@ -22,6 +22,23 @@ let worldMapViewBox = getMinMaxObj();
 // Cache to combine maps
 let combineCache = {};
 
+// Get excluded paths
+let excludedPaths = {};
+const regexExcludedPaths =
+  /<path id="excluded_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+
+for (const match of data.matchAll(regexExcludedPaths)) {
+  // Get the id
+  const id = getCleanId(match[1]);
+
+  // Clean up path
+  let path = match[2];
+  path = cleanUpPath(path);
+
+  // Cache path
+  excludedPaths[id] = path;
+}
+
 // Regular expression to match country paths
 const regex =
   /<path id="map_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
@@ -29,7 +46,7 @@ const regex =
 // Process country map paths
 for (const match of data.matchAll(regex)) {
   // Get the id
-  const id = match[1];
+  const id = getCleanId(match[1]);
 
   // Debug
   // if (
@@ -64,23 +81,6 @@ for (const match of data.matchAll(regex)) {
   // Get viewBox
   const viewBox = getViewBox(path);
 
-  // Update world map viewBox
-  if (viewBox.xMin < worldMapViewBox.xMin) {
-    worldMapViewBox.xMin = viewBox.xMin;
-  }
-
-  if (viewBox.xMax > worldMapViewBox.xMax) {
-    worldMapViewBox.xMax = viewBox.xMax;
-  }
-
-  if (viewBox.yMin < worldMapViewBox.yMin) {
-    worldMapViewBox.yMin = viewBox.yMin;
-  }
-
-  if (viewBox.yMax > worldMapViewBox.yMax) {
-    worldMapViewBox.yMax = viewBox.yMax;
-  }
-
   // Generate country file content
   let countryFileContent = getSvgStart(viewBox);
   countryFileContent += "\n";
@@ -95,8 +95,35 @@ for (const match of data.matchAll(regex)) {
     countryFileContent
   );
 
+  // Get world map path
+  let worldMapPath = path;
+
+  if (excludedPaths[id]) {
+    worldMapPath += " " + excludedPaths[id];
+  }
+
+  const includedViewBox = getViewBox(worldMapPath);
+
+  // Update world map viewBox
+  if (includedViewBox.xMin < worldMapViewBox.xMin) {
+    worldMapViewBox.xMin = includedViewBox.xMin;
+  }
+
+  if (includedViewBox.xMax > worldMapViewBox.xMax) {
+    worldMapViewBox.xMax = includedViewBox.xMax;
+  }
+
+  if (includedViewBox.yMin < worldMapViewBox.yMin) {
+    worldMapViewBox.yMin = includedViewBox.yMin;
+  }
+
+  if (includedViewBox.yMax > worldMapViewBox.yMax) {
+    worldMapViewBox.yMax = includedViewBox.yMax;
+  }
+
   // Generate world file content
-  worldFileContent += '  <path data-map="' + id + '" d="' + path + '"/>';
+  worldFileContent +=
+    '  <path data-map="' + id + '" d="' + worldMapPath + '"/>';
   worldFileContent += "\n";
 
   worldFileStrokeContent +=
@@ -105,7 +132,7 @@ for (const match of data.matchAll(regex)) {
     '" stroke="#DDDDDD" stroke-width="' +
     config.strokeWidth +
     '" stroke-linecap="round" stroke-linejoin="round" d="' +
-    path +
+    worldMapPath +
     '"/>';
   worldFileStrokeContent += "\n";
 
@@ -171,7 +198,7 @@ for (const match of data.matchAll(regexBorders)) {
 
   let borderIdsData = "";
   borderIds.forEach(function (borderId, index) {
-    borderId = borderId.replace(/_[0-9]+_/, "");
+    borderId = getCleanId(borderId);
     borderIdsData += " data-border" + (index + 1) + '="' + borderId + '"';
   });
 
@@ -261,6 +288,12 @@ function getSvgStart(viewBox) {
   return svgStart;
 }
 
+// Get a clean id
+function getCleanId(id) {
+  return id.replace(/_[0-9]+_/, "");
+}
+
+// Get an onject with the start min and max values
 function getMinMaxObj() {
   return {
     xMin: 10000,
