@@ -39,6 +39,10 @@ module.exports = {
     "KN-K": "KN",
     "KN-N": "KN",
 
+    // South Korea
+    KR: "KR",
+    "KR-49": "KR",
+
     // Papua New Guinea
     "PG-ML": "PG",
     "PG-BA": "PG",
