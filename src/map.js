@@ -129,7 +129,9 @@ for (const match of data.matchAll(regex)) {
   worldFileStrokeContent +=
     '  <path data-map="' +
     id +
-    '" stroke="#DDDDDD" stroke-width="' +
+    '" stroke="' +
+    config.strokeColor +
+    '" stroke-width="' +
     config.strokeWidth +
     '" stroke-linecap="round" stroke-linejoin="round" d="' +
     worldMapPath +

@@ -2,8 +2,9 @@ module.exports = {
   // Total of maps
   totalMaps: 344,
 
-  // Stroke width for file world-with-stroke.svg
+  // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
+  strokeColor: '#EEEEEE',
 
   // Move amount when moving a path horizontally around the globe
   moveConstantX: 1328,
