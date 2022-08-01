@@ -22,12 +22,12 @@ let worldMapViewBox = getMinMaxObj();
 // Cache to combine maps
 let combineCache = {};
 
-// Get excluded paths
-let excludedPaths = {};
-const regexExcludedPaths =
-  /<path id="excluded_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+// Get ignore paths
+let ignorePaths = {};
+const regexIgnorePaths =
+  /<path id="ignore_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
-for (const match of data.matchAll(regexExcludedPaths)) {
+for (const match of data.matchAll(regexIgnorePaths)) {
   // Get the id
   const id = getCleanId(match[1]);
 
@@ -36,7 +36,7 @@ for (const match of data.matchAll(regexExcludedPaths)) {
   path = cleanUpPath(path);
 
   // Cache path
-  excludedPaths[id] = path;
+  ignorePaths[id] = path;
 }
 
 // Regular expression to match country paths
@@ -98,8 +98,8 @@ for (const match of data.matchAll(regex)) {
   // Get world map path
   let worldMapPath = path;
 
-  if (excludedPaths[id]) {
-    worldMapPath += " " + excludedPaths[id];
+  if (ignorePaths[id]) {
+    worldMapPath += " " + ignorePaths[id];
   }
 
   const includedViewBox = getViewBox(worldMapPath);
