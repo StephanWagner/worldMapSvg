@@ -1,6 +1,9 @@
 module.exports = {
   // Total of maps
-  totalMaps: 344,
+  totalMaps: 350,
+
+  // Precision
+  decimals: 3,
 
   // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
@@ -23,6 +26,10 @@ module.exports = {
 
   // Combine paths to country
   combine: {
+    // Antigua and Barbuda
+    "AG-04": "AG",
+    "AG-10": "AG",
+
     // Australia
     "AU-ML": "AU",
     "AU-TAS": "AU",

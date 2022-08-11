@@ -277,14 +277,14 @@ if (errorCount > 0) {
 
 // Get the start of the SVG with viewBox data
 function getSvgStart(viewBox) {
-  const width = (viewBox.xMax - viewBox.xMin).toFixed(3);
-  const height = (viewBox.yMax - viewBox.yMin).toFixed(3);
+  const width = (viewBox.xMax - viewBox.xMin).toFixed(config.decimals);
+  const height = (viewBox.yMax - viewBox.yMin).toFixed(config.decimals);
 
   let svgStart =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="{X} {Y} {W} {H}">';
 
-  svgStart = svgStart.replace(/{X}/g, viewBox.xMin.toFixed(3));
-  svgStart = svgStart.replace(/{Y}/g, viewBox.yMin.toFixed(3));
+  svgStart = svgStart.replace(/{X}/g, viewBox.xMin.toFixed(config.decimals));
+  svgStart = svgStart.replace(/{Y}/g, viewBox.yMin.toFixed(config.decimals));
   svgStart = svgStart.replace(/{W}/g, width);
   svgStart = svgStart.replace(/{H}/g, height);
   return svgStart;
@@ -432,18 +432,18 @@ function movePath(path, moveX, moveY) {
       switch (cmd) {
         case "M":
         case "L":
-          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(3) : val[0];
-          y = moveY !== 0 ? (parseFloat(val[1]) + moveY).toFixed(3) : val[1];
+          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(config.decimals) : val[0];
+          y = moveY !== 0 ? (parseFloat(val[1]) + moveY).toFixed(config.decimals) : val[1];
           newPath += cmd + x + "," + y;
           break;
 
         case "H":
-          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(3) : val[0];
+          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(config.decimals) : val[0];
           newPath += cmd + x;
           break;
 
         case "V":
-          y = moveY !== 0 ? (parseFloat(val[0]) + moveY).toFixed(3) : val[0];
+          y = moveY !== 0 ? (parseFloat(val[0]) + moveY).toFixed(config.decimals) : val[0];
           newPath += cmd + y;
 
         case "l":
