@@ -7,10 +7,16 @@ module.exports = {
 
   // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
-  strokeColor: '#EEEEEE',
+  strokeColor: "#EEEEEE",
 
   // Move amount when moving a path horizontally around the globe
   moveConstantX: 1328,
+
+  // Ignore on world map
+  ignoreWorldMap: [
+    // Cyprus combined
+    "CY",
+  ],
 
   // Paths that need to be moved
   combineMove: [

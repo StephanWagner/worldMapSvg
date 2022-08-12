@@ -96,47 +96,49 @@ for (const match of data.matchAll(regex)) {
   );
 
   // Get world map path
-  let worldMapPath = path;
+  if (config.ignoreWorldMap.indexOf(id) === -1) {
+    let worldMapPath = path;
 
-  if (ignorePaths[id]) {
-    worldMapPath += " " + ignorePaths[id];
+    if (ignorePaths[id]) {
+      worldMapPath += " " + ignorePaths[id];
+    }
+
+    const includedViewBox = getViewBox(worldMapPath);
+
+    // Update world map viewBox
+    if (includedViewBox.xMin < worldMapViewBox.xMin) {
+      worldMapViewBox.xMin = includedViewBox.xMin;
+    }
+
+    if (includedViewBox.xMax > worldMapViewBox.xMax) {
+      worldMapViewBox.xMax = includedViewBox.xMax;
+    }
+
+    if (includedViewBox.yMin < worldMapViewBox.yMin) {
+      worldMapViewBox.yMin = includedViewBox.yMin;
+    }
+
+    if (includedViewBox.yMax > worldMapViewBox.yMax) {
+      worldMapViewBox.yMax = includedViewBox.yMax;
+    }
+
+    // Generate world file content
+    worldFileContent +=
+      '  <path data-map="' + id + '" d="' + worldMapPath + '"/>';
+    worldFileContent += "\n";
+
+    worldFileStrokeContent +=
+      '  <path data-map="' +
+      id +
+      '" stroke="' +
+      config.strokeColor +
+      '" stroke-width="' +
+      config.strokeWidth +
+      '" stroke-linecap="round" stroke-linejoin="round" d="' +
+      worldMapPath +
+      '"/>';
+    worldFileStrokeContent += "\n";
   }
-
-  const includedViewBox = getViewBox(worldMapPath);
-
-  // Update world map viewBox
-  if (includedViewBox.xMin < worldMapViewBox.xMin) {
-    worldMapViewBox.xMin = includedViewBox.xMin;
-  }
-
-  if (includedViewBox.xMax > worldMapViewBox.xMax) {
-    worldMapViewBox.xMax = includedViewBox.xMax;
-  }
-
-  if (includedViewBox.yMin < worldMapViewBox.yMin) {
-    worldMapViewBox.yMin = includedViewBox.yMin;
-  }
-
-  if (includedViewBox.yMax > worldMapViewBox.yMax) {
-    worldMapViewBox.yMax = includedViewBox.yMax;
-  }
-
-  // Generate world file content
-  worldFileContent +=
-    '  <path data-map="' + id + '" d="' + worldMapPath + '"/>';
-  worldFileContent += "\n";
-
-  worldFileStrokeContent +=
-    '  <path data-map="' +
-    id +
-    '" stroke="' +
-    config.strokeColor +
-    '" stroke-width="' +
-    config.strokeWidth +
-    '" stroke-linecap="round" stroke-linejoin="round" d="' +
-    worldMapPath +
-    '"/>';
-  worldFileStrokeContent += "\n";
 
   // Count generated files
   countryMapCount++;
@@ -432,18 +434,30 @@ function movePath(path, moveX, moveY) {
       switch (cmd) {
         case "M":
         case "L":
-          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(config.decimals) : val[0];
-          y = moveY !== 0 ? (parseFloat(val[1]) + moveY).toFixed(config.decimals) : val[1];
+          x =
+            moveX !== 0
+              ? (parseFloat(val[0]) + moveX).toFixed(config.decimals)
+              : val[0];
+          y =
+            moveY !== 0
+              ? (parseFloat(val[1]) + moveY).toFixed(config.decimals)
+              : val[1];
           newPath += cmd + x + "," + y;
           break;
 
         case "H":
-          x = moveX !== 0 ? (parseFloat(val[0]) + moveX).toFixed(config.decimals) : val[0];
+          x =
+            moveX !== 0
+              ? (parseFloat(val[0]) + moveX).toFixed(config.decimals)
+              : val[0];
           newPath += cmd + x;
           break;
 
         case "V":
-          y = moveY !== 0 ? (parseFloat(val[0]) + moveY).toFixed(config.decimals) : val[0];
+          y =
+            moveY !== 0
+              ? (parseFloat(val[0]) + moveY).toFixed(config.decimals)
+              : val[0];
           newPath += cmd + y;
 
         case "l":
