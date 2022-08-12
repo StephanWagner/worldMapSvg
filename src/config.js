@@ -9,6 +9,12 @@ module.exports = {
   strokeWidth: 10,
   strokeColor: "#EEEEEE",
 
+  // Border options
+  borderSizes: {
+    m: 0.06,
+    s: 0.02,
+  },
+
   // Move amount when moving a path horizontally around the globe
   moveConstantX: 1328,
 
