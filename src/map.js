@@ -31,6 +31,9 @@ let worldMapViewBox = getMinMaxObj();
 // Cache to combine maps
 let combineCache = {};
 
+// Cache for borders
+let borderCache = [];
+
 // Get ignore paths
 let ignorePaths = {};
 const regexIgnorePaths =
@@ -39,6 +42,11 @@ const regexIgnorePaths =
 for (const match of mapData.matchAll(regexIgnorePaths)) {
   // Get the id
   const id = getCleanId(match[1]);
+
+  // Debug
+  if (debug(id)) {
+    continue;
+  }
 
   // Clean up path
   let path = match[2];
@@ -70,7 +78,7 @@ for (const match of mapData.matchAll(regexPaths)) {
   if (!data[id]) {
     data[id] = {
       paths: [],
-      polylines: []
+      polylines: [],
     };
   }
   data[id].paths.push(path);
@@ -97,17 +105,18 @@ const regexBorderPolylines =
 
 // Process country map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
-  // const borderType = match[1];
-  // const borderSize = match[2];
+  const borderType = match[1];
+  const borderSize = match[2];
   const polyline = cleanUpPolyline(match[4]);
   const borderIdsStr = match[3];
   const borderIds = borderIdsStr.split("_x7C_");
-
+  let borderIdsClean = [];
 
   for (let id of borderIds) {
     id = getCleanId(id);
 
-    if (id == 'XX') {
+    // Ignore temporary ids
+    if (id == "XX") {
       continue;
     }
 
@@ -120,28 +129,23 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
-        polylines: []
+        polylines: [],
       };
     }
     data[id].polylines.push(polyline);
 
-    //borderIdsData += " data-border" + (index + 1) + '="' + borderId + '"';
+    // Cache ids
+    borderIdsClean.push(id);
   }
 
-  // const borderPathSvg =
-  //   "  <path" +
-  //   borderIdsData +
-  //   ' fill="none" stroke="#FFFFFF" stroke-width="' +
-  //   config.borderSizes[borderSize] +
-  //   '" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
-  //   borderPath +
-  //   '"/>';
-
-  // worldMapFileContent += borderPathSvg;
-  // worldMapFileContent += "\n";
-
-  // worldMapFileContentStroke += borderPathSvg;
-  // worldMapFileContentStroke += "\n";
+  if (borderIdsClean.length == 2) {
+    borderCache.push({
+      ids: borderIdsClean,
+      type: borderType,
+      size: borderSize,
+      polyline: polyline,
+    });
+  }
 }
 
 // Regular expression to match country polylines
@@ -166,7 +170,7 @@ for (const match of mapData.matchAll(regexPolylines)) {
   if (!data[id]) {
     data[id] = {
       paths: [],
-      polylines: []
+      polylines: [],
     };
   }
   data[id].polylines.push(polyline);
@@ -183,7 +187,6 @@ for (var id in data) {
   }
 
   if (countryData.polylines.length) {
-
     let polylinesData = [];
 
     // Sort polylines
@@ -202,6 +205,9 @@ for (var id in data) {
         y: pLastSplit[1],
       };
 
+      // TODO
+      // Make shure the largest borders are calculated from left to right
+      // Sync this setting with the border calculation
       if (float(pFirst.x) > float(pLast.x)) {
         pSplit = pSplit.reverse();
         const pFirstC = pFirst;
@@ -254,12 +260,13 @@ for (var id in data) {
     }
 
     if (unsortedPolylinesData.length) {
-      console.log("\x1b[31m", "✗ Error: Inconsistent borders detected (" + id + ")");
+      console.log(
+        "\x1b[31m",
+        "✗ Error: Inconsistent borders detected (" + id + ")"
+      );
     }
 
     // Generate path
-    // countryData.polylinesData.shift();
-
     let path = "";
 
     for (let [index, polylineData] of sortedPolylinesData.entries()) {
@@ -305,6 +312,7 @@ for (var id in data) {
       }
     }
 
+    // Close path
     path +=
       "L" +
       sortedPolylinesData[0].first.x +
@@ -312,13 +320,13 @@ for (var id in data) {
       sortedPolylinesData[0].first.y +
       "z";
 
+    // Optimize
     path = path.replace(/,-/g, "-");
 
     if (!data[id]) {
       data[id] = {
         paths: [],
         polylines: [],
-        polylinesData: [],
       };
     }
     data[id].paths.push(path);
@@ -452,39 +460,93 @@ worldMapFileContentStroke += worldFileStrokeContent;
 worldMapFileContent += "\n";
 worldMapFileContentStroke += worldFileContent;
 
-// Regular expression to match border paths
-const regexBorders =
-  /<path id="border-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9|_]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+for (const border of borderCache) {
+  let path = "";
 
-// // Process border paths
-// for (const match of mapData.matchAll(regexBorders)) {
-//   const borderType = match[1];
-//   const borderSize = match[2];
-//   const borderPath = cleanUpPath(match[4]);
-//   const borderIdsStr = match[3];
-//   const borderIds = borderIdsStr.split("_x7C_");
+  let pSplit = border.polyline.split(" ");
 
-//   let borderIdsData = "";
-//   borderIds.forEach(function (borderId, index) {
-//     borderId = getCleanId(borderId);
-//     borderIdsData += " data-border" + (index + 1) + '="' + borderId + '"';
-//   });
+  // Improve compressed size
+  // Make sure the border is calculated from left to right as this is most likely the way the country shore is calculated
+  const pFirstSplit = pSplit[0].split(",");
+  let pFirst = {
+    x: pFirstSplit[0],
+    y: pFirstSplit[1],
+  };
 
-//   const borderPathSvg =
-//     "  <path" +
-//     borderIdsData +
-//     ' fill="none" stroke="#FFFFFF" stroke-width="' +
-//     config.borderSizes[borderSize] +
-//     '" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
-//     borderPath +
-//     '"/>';
+  const pLastSplit = pSplit[pSplit.length - 1].split(",");
+  let pLast = {
+    x: pLastSplit[0],
+    y: pLastSplit[1],
+  };
 
-//   worldMapFileContent += borderPathSvg;
-//   worldMapFileContent += "\n";
+  if (float(pFirst.x) > float(pLast.x)) {
+    pSplit = pSplit.reverse();
+  }
 
-//   worldMapFileContentStroke += borderPathSvg;
-//   worldMapFileContentStroke += "\n";
-// }
+  let index = 0;
+  let lastPoint;
+
+  for (const point of pSplit) {
+    if (index == 0) {
+      path += "M" + point;
+      lastPoint = point;
+      index++;
+      continue;
+    }
+
+    const pointSplit = point.split(",");
+    const x = float(pointSplit[0]);
+    const y = float(pointSplit[1]);
+
+    const lastPointSplit = lastPoint.split(",");
+    const lastX = float(lastPointSplit[0]);
+    const lastY = float(lastPointSplit[1]);
+
+    const diffX = float(x - lastX);
+    const diffY = float(y - lastY);
+
+    // Line
+    if (diffX != 0 && diffY != 0) {
+      path += "l" + diffX + "," + diffY;
+    }
+
+    // Horizontal line
+    if (diffX != 0 && diffY == 0) {
+      path += "h" + diffX;
+    }
+
+    // Vertical line
+    if (diffX == 0 && diffY != 0) {
+      path += "v" + diffY;
+    }
+
+    lastPoint = point;
+
+    index++;
+  }
+
+  // Optimize path
+  path = path.replace(/,-/g, "-");
+
+  // TODO border type
+
+  const borderPathSvg =
+    '  <path data-border1="' +
+    border.ids[0] +
+    '" data-border2="' +
+    border.ids[1] +
+    '" fill="none" stroke="#FFFFFF" stroke-width="' +
+    config.borderSizes[border.size] +
+    '" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
+    path +
+    '"/>';
+
+  worldMapFileContent += borderPathSvg;
+  worldMapFileContent += "\n";
+
+  worldMapFileContentStroke += borderPathSvg;
+  worldMapFileContentStroke += "\n";
+}
 
 // Close world map file
 worldMapFileContent += "</svg>";
