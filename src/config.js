@@ -50,6 +50,10 @@ module.exports = {
     "BQ-BO": "BQ",
     "BQ-SA": "BQ",
 
+    // Akrotiri and Dhekelia
+    "CY-AK": "CY-SBA",
+    "CY-DH": "CY-SBA",
+
     // Kiribati
     "KI-G": "KI",
     "KI-L": "KI",
