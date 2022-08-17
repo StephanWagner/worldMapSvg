@@ -24,6 +24,13 @@ module.exports = {
     "CY",
   ],
 
+  // Ignore creating file
+  ignoreFile: [
+    // Cyprus, Greek
+    "CY-GR1",
+    "CY-GR2",
+  ],
+
   // Paths that need to be moved
   combineMove: [
     // Line Islands (Kiribati)
@@ -53,6 +60,10 @@ module.exports = {
     // Akrotiri and Dhekelia
     "CY-AK": "CY-SBA",
     "CY-DH": "CY-SBA",
+
+    // Cyprus, Greece
+    "CY-GR1": "CY-GR",
+    "CY-GR2": "CY-GR",
 
     // Kiribati
     "KI-G": "KI",

@@ -8,7 +8,7 @@ const config = require("./config.js");
 // Debugging
 const debug = function (id) {
   return false;
-  return id != "CO";
+  return id != "CY-TR" && id != "CY-GR" && id != "CY-DH" && id != "CY-AK";
 };
 
 // Map data
@@ -101,7 +101,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexBorderPolylines =
-  /<polyline id="map-border-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9|_]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="map-border-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9|_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="[0-9\.]+"[0-9a-z-="\. ]+points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process country map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
@@ -114,7 +114,6 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
 
   for (let id of borderIds) {
     id = getCleanId(id);
-
     // Ignore temporary ids
     if (id == "XX") {
       continue;
@@ -264,6 +263,7 @@ for (var id in data) {
         "\x1b[31m",
         "✗ Error: Inconsistent borders detected (" + id + ")"
       );
+      errorCount++;
     }
 
     // Generate path
@@ -348,22 +348,24 @@ for (var id in data) {
     combineCache[combineId].push(combinePath);
   }
 
-  // Get viewBox
-  const viewBox = getViewBox(path);
+  if (config.ignoreFile.indexOf(id) === -1) {
+    // Get viewBox
+    const viewBox = getViewBox(path);
 
-  // Generate country file content
-  let countryFileContent = getSvgStart(viewBox);
-  countryFileContent += "\n";
-  countryFileContent += '  <path d="' + path + '"/>';
-  countryFileContent += "\n";
-  countryFileContent += "</svg>";
-  countryFileContent += "\n";
+    // Generate country file content
+    let countryFileContent = getSvgStart(viewBox);
+    countryFileContent += "\n";
+    countryFileContent += '  <path d="' + path + '"/>';
+    countryFileContent += "\n";
+    countryFileContent += "</svg>";
+    countryFileContent += "\n";
 
-  // Write country file
-  fs.writeFileSync(
-    __dirname + "/../maps/countries/" + id + ".svg",
-    countryFileContent
-  );
+    // Write country file
+    fs.writeFileSync(
+      __dirname + "/../maps/countries/" + id + ".svg",
+      countryFileContent
+    );
+  }
 
   // Get world map path
   if (config.ignoreWorldMap.indexOf(id) === -1) {
