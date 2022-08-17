@@ -530,7 +530,11 @@ for (const border of borderCache) {
   // Optimize path
   path = path.replace(/,-/g, "-");
 
-  // TODO border type
+  let borderTypeAttr = " ";
+
+  if (border.type == "t") {
+    borderTypeAttr += 'stroke-dasharray="0.06"';
+  }
 
   const borderPathSvg =
     '  <path data-border1="' +
@@ -539,7 +543,9 @@ for (const border of borderCache) {
     border.ids[1] +
     '" fill="none" stroke="#FFFFFF" stroke-width="' +
     config.borderSizes[border.size] +
-    '" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="' +
+    '" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"' +
+    borderTypeAttr +
+    ' d="' +
     path +
     '"/>';
 
