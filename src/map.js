@@ -530,10 +530,10 @@ for (const border of borderCache) {
   // Optimize path
   path = path.replace(/,-/g, "-");
 
-  let borderTypeAttr = " ";
+  let borderTypeAttr = "";
 
   if (border.type == "t") {
-    borderTypeAttr += 'stroke-dasharray="0.06"';
+    borderTypeAttr += ' stroke-dasharray="0.06"';
   }
 
   const borderPathSvg =
