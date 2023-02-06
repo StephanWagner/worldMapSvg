@@ -205,7 +205,7 @@ for (var id in data) {
       };
 
       // TODO
-      // Make shure the largest borders are calculated from left to right
+      // Make sure the largest borders are calculated from left to right
       // Sync this setting with the border calculation
       if (float(pFirst.x) > float(pLast.x)) {
         pSplit = pSplit.reverse();
