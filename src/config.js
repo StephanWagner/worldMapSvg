@@ -57,6 +57,9 @@ module.exports = {
     "BQ-BO": "BQ",
     "BQ-SA": "BQ",
 
+    // China
+    "CN-HI": "CN",
+
     // Akrotiri and Dhekelia
     "CY-AK": "CY-SBA",
     "CY-DH": "CY-SBA",
@@ -75,7 +78,7 @@ module.exports = {
     "KN-N": "KN",
 
     // South Korea
-    KR: "KR",
+    "KR": "KR",
     "KR-49": "KR",
 
     // Papua New Guinea
@@ -93,7 +96,7 @@ module.exports = {
     "UM-95": "UM",
 
     // Venezuela
-    VE: "VE",
+    "VE": "VE",
     "VE-O": "VE",
   },
 };
