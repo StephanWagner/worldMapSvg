@@ -416,7 +416,7 @@ for (var id in data) {
   countryMapCount++;
 
   // Country map success message
-  console.log("\x1b[36m", "✓ " + id);
+  // console.log("\x1b[36m", "✓ " + id);
 }
 
 // Generate combined paths
@@ -441,7 +441,7 @@ for (const id in combineCache) {
   combinedMapCount++;
 
   // Combined country map success message
-  console.log("\x1b[33m", "✓ " + id);
+  // console.log("\x1b[33m", "✓ " + id);
 }
 
 // Generate world map file content
