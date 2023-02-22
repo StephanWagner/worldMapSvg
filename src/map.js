@@ -226,6 +226,10 @@ for (var id in data) {
     let lastPolyline = null;
     const unsortedPolylinesData = polylinesData;
 
+    // TODO
+
+    // Array of polylines to loop through... see belize
+
     while (unsortedPolylinesData.length && index < 20) {
       if (index == 0) {
         sortedPolylinesData.push(unsortedPolylinesData[0]);
