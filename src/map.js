@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const zlib = require("zlib");
+const util = require('util')
 
 const config = require("./config.js");
 
@@ -205,8 +206,8 @@ for (var id in data) {
       };
 
       // TODO
-      // Make sure the largest borders are calculated from left to right
-      // Sync this setting with the border calculation
+      // Make sure the largest borders are calculated FIRST from left to right
+
       if (float(pFirst.x) > float(pLast.x)) {
         pSplit = pSplit.reverse();
         const pFirstC = pFirst;
@@ -221,119 +222,234 @@ for (var id in data) {
       });
     }
 
-    let index = 0;
-    let sortedPolylinesData = [];
-    let lastPolyline = null;
-    const unsortedPolylinesData = polylinesData;
+    // Group unsorted polylines
 
-    // TODO
+    const ungroupedPolylinesData = polylinesData;
+    const maxWhile = 40;
+    let indexWhile = 0;
+    let groupFound = false;
 
-    // Array of polylines to loop through... see belize
+    // Add first group
+    const groupedPolylinesData = [{
+      grouped: [
+        ungroupedPolylinesData[0]
+      ],
+      sorted: []
+    }];
+    ungroupedPolylinesData.splice(0, 1);
 
-    while (unsortedPolylinesData.length && index < 20) {
-      if (index == 0) {
-        sortedPolylinesData.push(unsortedPolylinesData[0]);
-        lastPolyline = unsortedPolylinesData[0];
-        unsortedPolylinesData.shift();
-      } else {
-        for (let [index, unsortedPolyline] of unsortedPolylinesData.entries()) {
-          if (
-            (lastPolyline.last.x == unsortedPolyline.first.x &&
-              lastPolyline.last.y == unsortedPolyline.first.y) ||
-            (lastPolyline.last.x == unsortedPolyline.last.x &&
-              lastPolyline.last.y == unsortedPolyline.last.y)
-          ) {
+    // Continue adding while ungrouped polylines exist
+    while (ungroupedPolylinesData.length && indexWhile < maxWhile) {
+
+      groupFound = false;
+
+      // Loop through groups
+      for (let [indexGPD, groupedPolylineGroup] of groupedPolylinesData.entries()) {
+
+        // Loop through grouped polylines
+        for (let [indexGP, groupedPolyline] of groupedPolylineGroup.grouped.entries()) {
+
+          // Find matches in ungrouped polylines
+          for (let [indexUP, ungroupedPolyline] of ungroupedPolylinesData.entries()) {
             if (
-              lastPolyline.last.x == unsortedPolyline.last.x &&
-              lastPolyline.last.y == unsortedPolyline.last.y
+              (
+                ungroupedPolyline.first.x == groupedPolyline.first.x &&
+                ungroupedPolyline.first.y == groupedPolyline.first.y
+              )
+              ||
+              (
+                ungroupedPolyline.last.x == groupedPolyline.last.x &&
+                ungroupedPolyline.last.y == groupedPolyline.last.y
+              )
+              ||
+              (
+                ungroupedPolyline.first.x == groupedPolyline.last.x &&
+                ungroupedPolyline.first.y == groupedPolyline.last.y
+              )
+              ||
+              (
+                ungroupedPolyline.last.x == groupedPolyline.first.x &&
+                ungroupedPolyline.last.y == groupedPolyline.first.y
+              )
             ) {
-              unsortedPolyline.points = unsortedPolyline.points.reverse();
-              const upFirstC = unsortedPolyline.first;
-              unsortedPolyline.first = unsortedPolyline.last;
-              unsortedPolyline.last = upFirstC;
+              groupedPolylinesData[indexGPD].grouped.push(ungroupedPolyline);
+              ungroupedPolylinesData.splice(indexUP, 1);
+              groupFound = true;
+              break;
             }
-            sortedPolylinesData.push(unsortedPolyline);
-            lastPolyline = unsortedPolyline;
-            unsortedPolylinesData.splice(index, 1);
+          }
+
+          // Abort if match found
+          if (groupFound) {
             break;
           }
         }
+
+        // Abort if match found
+        if (groupFound) {
+          break;
+        }
       }
-      index++;
+
+      // Add new group if none found
+      if (!groupFound) {
+        groupedPolylinesData.push({
+          grouped: [
+            ungroupedPolylinesData[0]
+          ],
+          sorted: []
+        });
+        ungroupedPolylinesData.splice(0, 1);
+      }
+
+      // Savegard
+      indexWhile++;
     }
 
-    if (unsortedPolylinesData.length) {
+    // Error
+    if (ungroupedPolylinesData.length) {
       console.log(
         "\x1b[31m",
-        "✗ Error: Inconsistent borders detected (" + id + ")"
+        "✗ Error: Inconsistent borders or polylines detected (" + id + ")"
       );
       errorCount++;
     }
 
-    // Generate path
-    let path = "";
+    // Sort grouped polylines
 
-    for (let [index, polylineData] of sortedPolylinesData.entries()) {
-      if (index == 0) {
-        path += "M" + polylineData.first.x + "," + polylineData.first.y;
+    indexWhile = 0;
+
+    // Loop through groups
+    for (let [indexGPD, groupedPolylineGroup] of groupedPolylinesData.entries()) {
+
+      // Add first sorted
+      groupedPolylinesData[indexGPD].sorted.push(
+        groupedPolylineGroup.grouped[0]
+      );
+      groupedPolylineGroup.lastPolyline = groupedPolylineGroup.grouped[0];
+      groupedPolylineGroup.grouped.splice(0, 1);
+
+      // Sort data while unsorted polylines exist
+      while (groupedPolylineGroup.grouped.length && indexWhile < maxWhile) {
+
+          // Find matches in unsorted polylines
+        for (let [indexUP, unsortedPolyline] of groupedPolylineGroup.grouped.entries()) {
+
+          if (
+            (
+              groupedPolylineGroup.lastPolyline.last.x == unsortedPolyline.first.x &&
+              groupedPolylineGroup.lastPolyline.last.y == unsortedPolyline.first.y
+            )
+            ||
+            (
+              groupedPolylineGroup.lastPolyline.last.x == unsortedPolyline.last.x &&
+              groupedPolylineGroup.lastPolyline.last.y == unsortedPolyline.last.y
+            )
+          ) {
+            if (
+              (
+                groupedPolylineGroup.lastPolyline.last.x == unsortedPolyline.last.x &&
+                groupedPolylineGroup.lastPolyline.last.y == unsortedPolyline.last.y
+              )
+            ) {
+              unsortedPolyline.points = unsortedPolyline.points.reverse();
+
+              const upFirstCache = unsortedPolyline.first;
+              unsortedPolyline.first = unsortedPolyline.last;
+              unsortedPolyline.last = upFirstCache;
+            }
+
+            groupedPolylinesData[indexGPD].sorted.push(
+              unsortedPolyline
+            );
+            groupedPolylinesData[indexGPD].lastPolyline = unsortedPolyline;
+            groupedPolylinesData[indexGPD].grouped.splice(indexUP, 1);
+          }
+        }
+
+        indexWhile++;
       }
 
-      let lastPoint;
+      // Error
+      if (groupedPolylineGroup.grouped.length) {
+        console.log(
+          "\x1b[31m",
+          "✗ Error: Inconsistent borders or polylines detected (" + id + ")"
+        );
+        errorCount++;
+      }
+    }
 
-      for (let [index2, point] of polylineData.points.entries()) {
-        if (index2 == 0) {
+    // Generate paths
+
+    // Loop through groups
+    for (let [indexGPD, groupedPolylineGroup] of groupedPolylinesData.entries()) {
+
+      let path = "";
+
+      for (let [index, sortedPolyline] of groupedPolylineGroup.sorted.entries()) {
+
+        if (index == 0) {
+          path += "M" + sortedPolyline.first.x + "," + sortedPolyline.first.y;
+        }
+
+        let lastPoint;
+
+        for (let [index2, point] of sortedPolyline.points.entries()) {
+          if (index2 == 0) {
+            lastPoint = point;
+            continue;
+          }
+
+          const pointSplit = point.split(",");
+          const x = float(pointSplit[0]);
+          const y = float(pointSplit[1]);
+
+          const lastPointSplit = lastPoint.split(",");
+          const lastX = float(lastPointSplit[0]);
+          const lastY = float(lastPointSplit[1]);
+
+          const diffX = float(x - lastX);
+          const diffY = float(y - lastY);
+
+          // Line
+          if (diffX != 0 && diffY != 0) {
+            path += "l" + diffX + "," + diffY;
+          }
+
+          // Horizontal line
+          if (diffX != 0 && diffY == 0) {
+            path += "h" + diffX;
+          }
+
+          // Vertical line
+          if (diffX == 0 && diffY != 0) {
+            path += "v" + diffY;
+          }
+
           lastPoint = point;
-          continue;
         }
-
-        const pointSplit = point.split(",");
-        const x = float(pointSplit[0]);
-        const y = float(pointSplit[1]);
-
-        const lastPointSplit = lastPoint.split(",");
-        const lastX = float(lastPointSplit[0]);
-        const lastY = float(lastPointSplit[1]);
-
-        const diffX = float(x - lastX);
-        const diffY = float(y - lastY);
-
-        // Line
-        if (diffX != 0 && diffY != 0) {
-          path += "l" + diffX + "," + diffY;
-        }
-
-        // Horizontal line
-        if (diffX != 0 && diffY == 0) {
-          path += "h" + diffX;
-        }
-
-        // Vertical line
-        if (diffX == 0 && diffY != 0) {
-          path += "v" + diffY;
-        }
-
-        lastPoint = point;
       }
+      
+      // Close path
+      path +=
+        "L" +
+        groupedPolylineGroup.sorted[0].first.x +
+        "," +
+        groupedPolylineGroup.sorted[0].first.y +
+        "z";
+
+      // Optimize
+      path = path.replace(/,-/g, "-");
+
+      if (!data[id]) {
+        data[id] = {
+          paths: [],
+          polylines: [],
+        };
+      }
+      data[id].paths.push(path);
     }
-
-    // Close path
-    path +=
-      "L" +
-      sortedPolylinesData[0].first.x +
-      "," +
-      sortedPolylinesData[0].first.y +
-      "z";
-
-    // Optimize
-    path = path.replace(/,-/g, "-");
-
-    if (!data[id]) {
-      data[id] = {
-        paths: [],
-        polylines: [],
-      };
-    }
-    data[id].paths.push(path);
   }
 
   path = data[id].paths.join(" ");
@@ -594,10 +710,10 @@ const compressedFilesizeStroke = getCompressedFilesize(
 console.log(
   "\x1b[33m",
   "✓ World map with stroke (" +
-    fileSizeStroke +
-    ") (" +
-    compressedFilesizeStroke +
-    " compressed)"
+  fileSizeStroke +
+  ") (" +
+  compressedFilesizeStroke +
+  " compressed)"
 );
 
 worldMapCount++;
@@ -859,4 +975,10 @@ function getFilesizeWithUnits(filesizeInBytes) {
 
   // Return in KB
   return filesizeInKilobytes.toFixed(2) + " KB";
+}
+
+// Deep log data
+
+function dLog(data) {
+  console.log(util.inspect(data, { showHidden: false, depth: null, colors: true }));
 }
