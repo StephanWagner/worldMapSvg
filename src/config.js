@@ -68,6 +68,10 @@ module.exports = {
     "CY-GR1": "CY-GR",
     "CY-GR2": "CY-GR",
 
+    // Scotland
+    "GB-SCT-A": "GB-SCT",
+    "GB-ZET": "GB-SCT",
+
     // Kiribati
     "KI-G": "KI",
     "KI-L": "KI",
