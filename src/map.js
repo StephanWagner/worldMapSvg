@@ -51,7 +51,7 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
 
   // Clean up path
   let path = match[2];
-  path = cleanUpPath(path);
+  path = cleanUpPath(path, id);
 
   // Cache path
   ignorePaths[id] = path;
@@ -73,7 +73,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 
   // Clean up path
   let path = match[2];
-  path = cleanUpPath(path);
+  path = cleanUpPath(path, id);
 
   // Cache
   if (!data[id]) {
@@ -843,7 +843,7 @@ function getViewBox(d) {
 }
 
 // Clean up a path
-function cleanUpPath(path) {
+function cleanUpPath(path, id) {
   path = path.replace(/  |\t|\r\n|\n|\r/gm, "");
 
   const paths = path.split(" ");
@@ -855,13 +855,13 @@ function cleanUpPath(path) {
       pathItem.indexOf("h") === -1 &&
       pathItem.indexOf("v") === -1
     ) {
-      console.log("\x1b[31m", "✗ Error: Empty path detected");
+      console.log("\x1b[31m", "✗ Error: Empty path detected (" + id + ")");
       errorCount++;
     }
 
     // Detect curves
     if (pathItem.indexOf("c") > -1) {
-      console.log("\x1b[31m", "✗ Error: Curve in path detected");
+      console.log("\x1b[31m", "✗ Error: Curve in path detected (" + id + ")");
       errorCount++;
     }
   });
