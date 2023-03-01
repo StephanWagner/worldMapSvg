@@ -7,7 +7,8 @@ module.exports = {
 
   // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
-  strokeColor: "#EEEEEE",
+  strokeColor: "#eee",
+  coloredPathColor: "#aaa",
 
   // Border options
   borderSizes: {
@@ -20,8 +21,11 @@ module.exports = {
 
   // Ignore on world map
   ignoreWorldMap: [
-    // Cyprus combined
+    // Cyprus
     "CY",
+
+    // Great Britain
+    "IE-NIR"
   ],
 
   // Ignore creating file
@@ -45,62 +49,125 @@ module.exports = {
 
   // Combine paths to country
   combine: {
+
     // Antigua and Barbuda
-    "AG-04": "AG",
-    "AG-10": "AG",
+    "AG-04": { ids: [{ id: "AG" }] },
+    "AG-10": { ids: [{ id: "AG" }] },
 
     // Australia
-    "AU-ML": "AU",
-    "AU-TAS": "AU",
+    "AU-ML": { ids: [{ id: "AU" }] },
+    "AU-TAS": { ids: [{ id: "AU" }] },
 
     // Caribbean Netherlands
-    "BQ-BO": "BQ",
-    "BQ-SA": "BQ",
+    "BQ-BO": { ids: [{ id: "BQ" }] },
+    "BQ-SA": { ids: [{ id: "BQ" }] },
 
     // China
-    "CN-HI": "CN",
+    "CN-HI": { ids: [{ id: "CN" }] },
+
+    // Dominican Republic, Haiti
+    "DO": {
+      ids: [
+        { id: "DO-C" },
+        { id: "HT-C", color: true }
+      ]
+    },
+    "HT": {
+      ids: [
+        { id: "DO-C", color: true },
+        { id: "HT-C" }
+      ],
+    },
 
     // Akrotiri and Dhekelia
-    "CY-AK": "CY-SBA",
-    "CY-DH": "CY-SBA",
+    "CY-AK": { ids: [{ id: "CY-SBA" }] },
+    "CY-DH": { ids: [{ id: "CY-SBA" }] },
 
     // Cyprus, Greece
-    "CY-GR1": "CY-GR",
-    "CY-GR2": "CY-GR",
+    "CY-GR1": { ids: [{ id: "CY-GR" }] },
+    "CY-GR2": { ids: [{ id: "CY-GR" }] },
 
     // Scotland
-    "GB-SCT-A": "GB-SCT",
-    "GB-ZET": "GB-SCT",
+    "GB-SCT-A": { ids: [{ id: "GB-SCT" }] },
+    "GB-ZET": { ids: [{ id: "GB-SCT" }] },
+
+    // Ireland, Northern Ireland
+    "IE": {
+      ids: [
+        { id: "IE-C", color: true },
+        { id: "GB-NIR-C" }
+      ]
+    },
+    "GB-NIR": {
+      ids: [
+        { id: "IE-C" },
+        { id: "GB-NIR-C", color: true },
+      ],
+    },
 
     // Kiribati
-    "KI-G": "KI",
-    "KI-L": "KI",
-    "KI-P": "KI",
+    "KI-G": { ids: [{ id: "KI" }] },
+    "KI-L": { ids: [{ id: "KI" }] },
+    "KI-P": { ids: [{ id: "KI" }] },
 
     // Saint Kitts and Nevis
-    "KN-K": "KN",
-    "KN-N": "KN",
+    "KN-K": { ids: [{ id: "KN" }] },
+    "KN-N": { ids: [{ id: "KN" }] },
 
     // South Korea
-    "KR": "KR",
-    "KR-49": "KR",
+    "KR": { ids: [{ id: "KR" }] },
+    "KR-49": { ids: [{ id: "KR" }] },
+    
+    // Dominican Republic, Haiti
+    "MF": {
+      ids: [
+        { id: "MF-C" },
+        { id: "SX-C", color: true }
+      ]
+    },
+    "SX": {
+      ids: [
+        { id: "MF-C", color: true },
+        { id: "SX-C" }
+      ],
+    },
 
     // Papua New Guinea
-    "PG-ML": "PG",
-    "PG-BA": "PG",
+    "PG-ML": { ids: [{ id: "PG" }] },
+    "PG-BA": { ids: [{ id: "PG" }] },
 
     // United States Minor Outlying Islands
-    "UM-67": "UM",
-    "UM-71": "UM",
-    "UM-76": "UM",
-    "UM-79": "UM",
-    "UM-81": "UM",
-    "UM-84": "UM",
-    "UM-86": "UM",
-    "UM-95": "UM",
+    // TODO any more?
+    "UM-67": { ids: [{ id: "UM" }] },
+    "UM-71": { ids: [{ id: "UM" }] },
+    "UM-76": { ids: [{ id: "UM" }] },
+    "UM-79": { ids: [{ id: "UM" }] },
+    "UM-81": { ids: [{ id: "UM" }] },
+    "UM-84": { ids: [{ id: "UM" }] },
+    "UM-86": { ids: [{ id: "UM" }] },
+    "UM-95": { ids: [{ id: "UM" }] },
 
     // Venezuela
-    "VE": "VE",
-    "VE-O": "VE",
+    "VE": { ids: [{ id: "VE" }] },
+    "VE-O": { ids: [{ id: "VE" }] },
+
+    // Virgin Islands
+    "VG": { ids: [{ id: "VG-VI" }] },
+    "VI": { ids: [{ id: "VG-VI" }] },
+    
+    // Virgin Islands
+    "VG": {
+      ids: [
+        { id: "VG-C" },
+        { id: "VI-C", color: true }
+      ]
+    },
+    "VI": {
+      ids: [
+        { id: "VG-C", color: true },
+        { id: "VI-C" }
+      ],
+    },
   },
+
 };
