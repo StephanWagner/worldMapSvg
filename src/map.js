@@ -9,7 +9,7 @@ const config = require("./config.js");
 // Debugging
 const debug = function (id) {
   //return false;
-  return id == "IE" || id == "GB-NIR" || id == "IE-NIR"; //id == "GB-ENG" || id == "GB-SCT-A" || id == "GB-WLS" || id == "GB-WLS" || id == "IE" || id == "IE-NIR" || id == "GB-NIR" || id == "GB";
+  return id == "IE" || id == "GB-NIR" || id == "IE-NIR" || id == "IE-C"; //id == "GB-ENG" || id == "GB-SCT-A" || id == "GB-WLS" || id == "GB-WLS" || id == "IE" || id == "IE-NIR" || id == "GB-NIR" || id == "GB";
 };
 
 // Map data
@@ -17,9 +17,13 @@ const mapData = fs.readFileSync(__dirname + "/map.svg", "utf8");
 
 // Counters
 let errorCount = 0;
-let countryMapCount = 0;
+let regionMapCount = 0;
 let combinedMapCount = 0;
 let worldMapCount = 0;
+
+// Log cache
+const regionLog = [];
+const combinedRegionLog = [];
 
 // Data
 let data = {};
@@ -57,11 +61,11 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
   ignorePaths[id] = path;
 }
 
-// Regular expression to match country paths
+// Regular expression to match region paths
 const regexPaths =
   /<path id="map-path_x5F_([A-Za-z0-9|_-]+)" fill="[A-Za-z0-9#]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
-// Process country map paths
+// Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
 
   // Clean up path
@@ -89,10 +93,9 @@ for (const match of mapData.matchAll(regexPaths)) {
     }
     data[id].paths.push(path);
 
-
     // Cache combine paths
     if (config.combine[id]) {
-      const combineId = config.combine[id];
+      const combineId = config.combine[id].id;
       if (!combineCache[combineId]) {
         combineCache[combineId] = [];
       }
@@ -111,7 +114,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 const regexBorderPolylines =
   /<polyline id="map-border-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9|_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="[0-9\.]+"[0-9a-z-="\. ]+points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
-// Process country map polylines
+// Process region map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
   const borderType = match[1];
   const borderSize = match[2];
@@ -156,11 +159,11 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
   }
 }
 
-// Regular expression to match country polylines
+// Regular expression to match region polylines
 const regexPolylines =
   /<polyline id="map-polyline_x5F_([A-Za-z0-9|_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
-// Process country map polylines
+// Process region map polylines
 for (const match of mapData.matchAll(regexPolylines)) {
 
   // Get ids
@@ -193,18 +196,18 @@ for (const match of mapData.matchAll(regexPolylines)) {
 for (var id in data) {
   id = getCleanId(id);
 
-  const countryData = data[id];
+  const regionData = data[id];
 
   // Debug
   if (!debug(id)) {
     continue;
   }
 
-  if (countryData.polylines.length) {
+  if (regionData.polylines.length) {
     let polylinesData = [];
 
     // Sort polylines
-    for (let polyline of countryData.polylines) {
+    for (let polyline of regionData.polylines) {
       let pSplit = polyline.split(" ");
 
       const pFirstSplit = pSplit[0].split(",");
@@ -322,10 +325,7 @@ for (var id in data) {
 
     // Error
     if (ungroupedPolylinesData.length) {
-      console.log(
-        "\x1b[31m",
-        "✗ Error: Inconsistent borders or polylines detected (" + id + ")"
-      );
+      log("✗ Error: Inconsistent borders or polylines detected (" + id + ")", "red");
       errorCount++;
     }
 
@@ -386,10 +386,7 @@ for (var id in data) {
 
       // Error
       if (groupedPolylineGroup.grouped.length) {
-        console.log(
-          "\x1b[31m",
-          "✗ Error: Inconsistent borders or polylines detected (" + id + ")"
-        );
+        log("✗ Error: Inconsistent borders or polylines detected (" + id + ")", "red");
         errorCount++;
       }
     }
@@ -470,7 +467,8 @@ for (var id in data) {
 
   // Add to combined
   if (config.combine[id]) {
-    const combineId = config.combine[id];
+    const combineId = config.combine[id].id;
+
     if (!combineCache[combineId]) {
       combineCache[combineId] = [];
     }
@@ -486,29 +484,19 @@ for (var id in data) {
     // Get viewBox
     const viewBox = getViewBox(path);
 
-    // Generate country file content
-    let countryFileContent = getSvgStart(viewBox);
-    countryFileContent += "\n";
-    countryFileContent += '  <path d="' + path + '"/>';
-    countryFileContent += "\n";
-    countryFileContent += "</svg>";
-    countryFileContent += "\n";
+    // Generate region file content
+    let regionFileContent = getSvgStart(viewBox);
+    regionFileContent += "\n";
+    regionFileContent += '  <path d="' + path + '"/>';
+    regionFileContent += "\n";
+    regionFileContent += "</svg>";
+    regionFileContent += "\n";
 
-    console.log('aaa');
-
-    console.log(id);
-
-    // Write country file
-    if (debug(id)) {
-
-
-      console.log('bbb');
-
-      fs.writeFileSync(
-        __dirname + "/../maps/regions/" + id + ".svg",
-        countryFileContent
-      );
-    }
+    // Write region file
+    fs.writeFileSync(
+      __dirname + "/../maps/regions/" + id + ".svg",
+      regionFileContent
+    );
   }
 
   // Get world map path
@@ -557,11 +545,12 @@ for (var id in data) {
   }
 
   // Count generated files
-  countryMapCount++;
-
-  // Country map success message
-  // console.log("\x1b[36m", "✓ " + id);
+  regionMapCount++;
+  regionLog.push(id);
 }
+
+// Log regions
+log("✓ " + regionMapCount + " Maps created: " + (regionLog.join(" | ")), "cyan");
 
 // Generate combined paths
 for (const id in combineCache) {
@@ -575,20 +564,19 @@ for (const id in combineCache) {
   combinedFileContent += "</svg>";
   combinedFileContent += "\n";
 
-  // Write country file
-  if (debug(id)) {
-    fs.writeFileSync(
-      __dirname + "/../maps/regions/" + id + ".svg",
-      combinedFileContent
-    );
-  }
+  // Write region file
+  fs.writeFileSync(
+    __dirname + "/../maps/regions/" + id + ".svg",
+    combinedFileContent
+  );
 
   // Count generated files
   combinedMapCount++;
+  combinedRegionLog.push(id);
 }
 
-// Combined country map success message
-// console.log("\x1b[33m", "✓ " + id);
+// Log combined regions
+log("✓ " + combinedMapCount + " combined maps created: " + (combinedRegionLog.join(" | ")), "cyan");
 
 // Generate world map file content
 let worldMapFileContent = getSvgStart(worldMapViewBox);
@@ -614,7 +602,7 @@ for (const border of borderCache) {
   let pSplit = border.polyline.split(" ");
 
   // Improve compressed size
-  // Make sure the border is calculated from left to right as this is most likely the way the country shore is calculated
+  // Make sure the border is calculated from left to right as this is most likely the way the region shore is calculated
   const pFirstSplit = pSplit[0].split(",");
   let pFirst = {
     x: pFirstSplit[0],
@@ -720,10 +708,7 @@ fs.writeFileSync(wordMapFilenameStroke, worldMapFileContentStroke);
 const fileSize = getFilesize(wordMapFilename);
 const compressedFilesize = getCompressedFilesize(worldMapFileContent);
 
-console.log(
-  "\x1b[33m",
-  "✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)"
-);
+log("✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)", "yellow");
 
 worldMapCount++;
 
@@ -733,30 +718,23 @@ const compressedFilesizeStroke = getCompressedFilesize(
   worldMapFileContentStroke
 );
 
-console.log(
-  "\x1b[33m",
-  "✓ World map with stroke (" +
-  fileSizeStroke +
-  ") (" +
-  compressedFilesizeStroke +
-  " compressed)"
-);
+log("✓ World map with stroke (" + fileSizeStroke + ") (" + compressedFilesizeStroke + " compressed)", "yellow");
 
 worldMapCount++;
 
 // Success messages
-console.log("\x1b[32m", "✓ " + countryMapCount + " individual maps generated");
-console.log("\x1b[32m", "✓ " + combinedMapCount + " combined maps generated");
-console.log("\x1b[32m", "✓ " + worldMapCount + " world maps generated");
+log("✓ " + regionMapCount + " individual maps generated", "green");
+log("✓ " + combinedMapCount + " combined maps generated", "green");
+log("✓ " + worldMapCount + " world maps generated", "green");
 
 // Done message
-const mapsDone = countryMapCount + "/" + config.totalMaps;
-const mapsDonePercent = ((countryMapCount / config.totalMaps) * 100).toFixed(2);
-console.log("\x1b[35m", "› " + mapsDone + " done (" + mapsDonePercent + "%)");
+const mapsDone = regionMapCount + "/" + config.totalMaps;
+const mapsDonePercent = ((regionMapCount / config.totalMaps) * 100).toFixed(2);
+log("› Progress: " + mapsDone + " (" + mapsDonePercent + "%)", "magenta");
 
 // Errors
 if (errorCount > 0) {
-  console.log("\x1b[31m", "✗ " + errorCount + " error: See log above");
+  log("✗ " + errorCount + " error: See log above", "red");
 }
 
 // Float precision
@@ -881,13 +859,13 @@ function cleanUpPath(path, id) {
       pathItem.indexOf("h") === -1 &&
       pathItem.indexOf("v") === -1
     ) {
-      console.log("\x1b[31m", "✗ Error: Empty path detected (" + id + ")");
+      log("✗ Error: Empty path detected (" + id + ")", "red");
       errorCount++;
     }
 
     // Detect curves
     if (pathItem.indexOf("c") > -1) {
-      console.log("\x1b[31m", "✗ Error: Curve in path detected (" + id + ")");
+      log("✗ Error: Curve in path detected (" + id + ")", "red");
       errorCount++;
     }
   });
@@ -1001,6 +979,24 @@ function getFilesizeWithUnits(filesizeInBytes) {
 
   // Return in KB
   return filesizeInKilobytes.toFixed(2) + " KB";
+}
+
+// Log data
+function log(text, color) {
+  const colors = {
+    black: "\x1b[30m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    yellow: "\x1b[33m",
+    blue: "\x1b[34m",
+    magenta: "\x1b[35m",
+    cyan: "\x1b[36m",
+    white: "\x1b[37m",
+    gray: "\x1b[90m"
+  };
+
+  color = colors[color] || color || colors.white;
+  console.log(color, text, "\x1b[0m");
 }
 
 // Deep log data
