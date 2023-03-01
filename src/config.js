@@ -23,6 +23,9 @@ module.exports = {
   ignoreWorldMap: [
     // Cyprus
     "CY",
+    "CY-GR-TR",
+    "CY-GR-SBA",
+    "CY-SBA",
 
     // Great Britain
     "IE-NIR"
@@ -30,9 +33,8 @@ module.exports = {
 
   // Ignore creating file
   ignoreFile: [
-    // Cyprus, Greek
-    "CY-GR1",
-    "CY-GR2",
+    // Cypress
+    "CY-GR-TR"
   ],
 
   // Paths that need to be moved
@@ -79,13 +81,30 @@ module.exports = {
       ],
     },
 
-    // Akrotiri and Dhekelia
-    "CY-AK": { ids: [{ id: "CY-SBA" }] },
-    "CY-DH": { ids: [{ id: "CY-SBA" }] },
+    // Cypress
+    "CY-SBA": {
+      ids: [
+        { id: "CY-SBA-C" },
+      ]
+    },
+    "CY-GR-TR": {
+      ids: [
+        { id: "CY-SBA-C", color: true },
+      ],
+    },
 
-    // Cyprus, Greece
-    "CY-GR1": { ids: [{ id: "CY-GR" }] },
-    "CY-GR2": { ids: [{ id: "CY-GR" }] },
+    "CY-GR-SBA": {
+      ids: [
+        { id: "CY-GR-SBA-C", color: true },
+        { id: "CY-TR-C" }
+      ]
+    },
+    "CY-TR": {
+      ids: [
+        { id: "CY-GR-SBA-C" },
+        { id: "CY-TR-C", color: true },
+      ],
+    },
 
     // Scotland
     "GB-SCT-A": { ids: [{ id: "GB-SCT" }] },
@@ -137,35 +156,33 @@ module.exports = {
     "PG-BA": { ids: [{ id: "PG" }] },
 
     // United States Minor Outlying Islands
-    // TODO any more?
     "UM-67": { ids: [{ id: "UM" }] },
     "UM-71": { ids: [{ id: "UM" }] },
-    "UM-76": { ids: [{ id: "UM" }] },
+    // "UM-76": { ids: [{ id: "UM" }] }, // Ignore Navassa Island
     "UM-79": { ids: [{ id: "UM" }] },
     "UM-81": { ids: [{ id: "UM" }] },
     "UM-84": { ids: [{ id: "UM" }] },
     "UM-86": { ids: [{ id: "UM" }] },
+    "UM-89": { ids: [{ id: "UM" }] },
     "UM-95": { ids: [{ id: "UM" }] },
 
     // Venezuela
     "VE": { ids: [{ id: "VE" }] },
     "VE-O": { ids: [{ id: "VE" }] },
-
-    // Virgin Islands
-    "VG": { ids: [{ id: "VG-VI" }] },
-    "VI": { ids: [{ id: "VG-VI" }] },
     
     // Virgin Islands
     "VG": {
       ids: [
         { id: "VG-C" },
-        { id: "VI-C", color: true }
+        { id: "VI-C", color: true },
+        { id: "VG-VI" }
       ]
     },
     "VI": {
       ids: [
         { id: "VG-C", color: true },
-        { id: "VI-C" }
+        { id: "VI-C" },
+        { id: "VG-VI" }
       ],
     },
   },

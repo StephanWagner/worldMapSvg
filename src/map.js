@@ -138,7 +138,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     idsClean.push(id);
   }
 
-  if (idsClean.length == 2) {
+  if (idsClean.length >= 2) {
     borderCache.push({
       ids: idsClean,
       type: borderType,
@@ -147,6 +147,8 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     });
   }
 }
+
+//dLog(borderCache);
 
 // Regular expression to match region polylines
 const regexPolylines =
