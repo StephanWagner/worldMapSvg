@@ -8,8 +8,8 @@ const config = require("./config.js");
 
 // Debugging
 const debug = function (id) {
-  //return false;
-  return id == "IE" || id == "GB-NIR" || id == "IE-NIR" || id == "IE-C"; //id == "GB-ENG" || id == "GB-SCT-A" || id == "GB-WLS" || id == "GB-WLS" || id == "IE" || id == "IE-NIR" || id == "GB-NIR" || id == "GB";
+  return true;
+  // return id == "IE" || id == "GB-NIR" || id == "IE-NIR" || id == "IE-C";
 };
 
 // Map data
@@ -93,19 +93,8 @@ for (const match of mapData.matchAll(regexPaths)) {
     }
     data[id].paths.push(path);
 
-    // Cache combine paths
-    if (config.combine[id]) {
-      const combineId = config.combine[id].id;
-      if (!combineCache[combineId]) {
-        combineCache[combineId] = [];
-      }
-      let combinePath = path;
-
-      if (config.combineMove.indexOf(id) !== -1) {
-        combinePath = movePath(path, config.moveConstantX, 0);
-      }
-      combineCache[combineId].push(combinePath);
-    }
+    // Add to combined cache
+    addPathsToCombineCache(id, path);
   }
 }
 
@@ -465,20 +454,8 @@ for (var id in data) {
 
   path = data[id].paths.join(" ");
 
-  // Add to combined
-  if (config.combine[id]) {
-    const combineId = config.combine[id].id;
-
-    if (!combineCache[combineId]) {
-      combineCache[combineId] = [];
-    }
-    let combinePath = path;
-
-    if (config.combineMove.indexOf(id) !== -1) {
-      combinePath = movePath(path, config.moveConstantX, 0);
-    }
-    combineCache[combineId].push(combinePath);
-  }
+  // Add to combined cache
+  addPathsToCombineCache(id, path);
 
   if (config.ignoreFile.indexOf(id) === -1) {
     // Get viewBox
@@ -554,12 +531,25 @@ log("✓ " + regionMapCount + " Maps created: " + (regionLog.join(" | ")), "cyan
 
 // Generate combined paths
 for (const id in combineCache) {
-  const path = combineCache[id].join(" ");
-  const viewBox = getViewBox(path);
+  const path = combineCache[id].paths.join(" ");
+  const coloredPath = combineCache[id].coloredPaths.join(" ");
 
+  // Get viewbox
+  let viewBox = getViewBox(path);
+
+  if (coloredPath) {
+    const combinedPath = path + " " + coloredPath;
+    viewBox = getViewBox(combinedPath);
+  }
+
+  // Create file content
   let combinedFileContent = getSvgStart(viewBox);
   combinedFileContent += "\n";
   combinedFileContent += '  <path d="' + path + '"/>';
+  if (coloredPath) {
+    combinedFileContent += "\n";
+    combinedFileContent += '  <path fill="' + config.coloredPathColor + '" d="' + coloredPath + '"/>';
+  }
   combinedFileContent += "\n";
   combinedFileContent += "</svg>";
   combinedFileContent += "\n";
@@ -951,6 +941,28 @@ function movePath(path, moveX, moveY) {
   });
 
   return newPaths.join(" ");
+}
+
+function addPathsToCombineCache(id, path) {
+  if (config.combine[id]) {
+    for (const idData of config.combine[id].ids) {
+      const combineId = idData.id;
+      const hasColor = idData.color;
+
+      if (!combineCache[combineId]) {
+        combineCache[combineId] = {
+          paths: [],
+          coloredPaths: []
+        };
+      }
+      let combinePath = path;
+
+      if (config.combineMove.indexOf(id) !== -1) {
+        combinePath = movePath(path, config.moveConstantX, 0);
+      }
+      combineCache[combineId][hasColor ? 'coloredPaths' : 'paths'].push(combinePath);
+    }
+  }
 }
 
 // Get filesize
