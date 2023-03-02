@@ -1,6 +1,6 @@
 module.exports = {
   // Total of maps
-  totalMaps: 355,
+  totalMaps: 380,
 
   // Precision
   decimals: 3,
@@ -8,7 +8,7 @@ module.exports = {
   // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
   strokeColor: "#eee",
-  coloredPathColor: "#aaa",
+  coloredPathColor: "#999",
 
   // Border options
   borderSizes: {
@@ -22,19 +22,28 @@ module.exports = {
   // Ignore on world map
   ignoreWorldMap: [
     // Cyprus
-    "CY",
-    "CY-GR-TR",
-    "CY-GR-SBA",
-    "CY-SBA",
+    "CY",         // Cypress combined
+    "CY-GR-TR",   // Greek and Tyrkish Cypress
+    "CY-GR-SBA",  // Greek Cypress with Akrotiri and Dhekelia
+    "CY-SBA",     // Akrotiri and Dhekelia
 
     // Great Britain
-    "IE-NIR"
+    "IE-NIR",     // Ireland with Northern Ireland
+    "GB",         // Great Britain
+    "GB-UK",      // United Kingdom
+    "GB-EAW",     // England and Wales
+    "GB-EAS",     // England and Scotland
+    "GB-SAW"      // Scotland and Wales
   ],
 
   // Ignore creating file
   ignoreFile: [
     // Cypress
-    "CY-GR-TR"
+    "CY-GR-TR",   // Greek and Tyrkish Cypress
+
+    // Great Britain
+    "GB-EAS",     // England and Scotland
+    "GB-SAW"      // Scotland and Wales
   ],
 
   // Paths that need to be moved
@@ -111,17 +120,53 @@ module.exports = {
     "GB-ZET": { ids: [{ id: "GB-SCT" }] },
 
     // Ireland, Northern Ireland
+    "GB-NIR": {
+      ids: [
+        { id: "IE-C" },
+        { id: "GB-NIR-C", color: true },
+      ],
+    },
     "IE": {
       ids: [
         { id: "IE-C", color: true },
         { id: "GB-NIR-C" }
       ]
     },
-    "GB-NIR": {
+
+    // United Kingdom: England
+    "GB-ENG": {
       ids: [
-        { id: "IE-C" },
-        { id: "GB-NIR-C", color: true },
-      ],
+        { id: "GB-ENG-C" },
+        { id: "GB-WLS-C", color: true },
+        { id: "GB-UK-ENG-C" },
+      ]
+    },
+    "GB-SAW": {
+      ids: [
+        { id: "GB-UK-ENG-C", color: true }
+      ]
+    },
+
+    // United Kingdom: Scotland
+    "GB-WLS": {
+      ids: [
+        { id: "GB-ENG-C", color: true },
+        { id: "GB-WLS-C" },
+        { id: "GB-UK-WLS-C" },
+      ]
+    },
+    "GB-EAS": { ids: [{ id: "GB-UK-WLS-C", color: true }] },
+
+    // United Kingdom: Scotland
+    "GB-SCT-A": { ids: [{ id: "GB-UK-SCT-C" }] },
+    "GB-EAW": { ids: [{ id: "GB-UK-SCT-C", color: true }] },
+
+    "IM": {
+      ids: [
+        { id: "GB-UK-ENG-C", color: true },
+        { id: "GB-UK-WLS-C", color: true },
+        { id: "GB-UK-SCT-C", color: true }
+      ]
     },
 
     // Kiribati
@@ -136,7 +181,7 @@ module.exports = {
     // South Korea
     "KR": { ids: [{ id: "KR" }] },
     "KR-49": { ids: [{ id: "KR" }] },
-    
+
     // Dominican Republic, Haiti
     "MF": {
       ids: [
@@ -169,7 +214,7 @@ module.exports = {
     // Venezuela
     "VE": { ids: [{ id: "VE" }] },
     "VE-O": { ids: [{ id: "VE" }] },
-    
+
     // Virgin Islands
     "VG": {
       ids: [
