@@ -12,8 +12,8 @@ module.exports = {
 
   // Border options
   borderSizes: {
-    m: 0.06,
-    s: 0.02,
+    m: 0.05,
+    s: 0.015,
   },
 
   // Move amount when moving a path horizontally around the globe
