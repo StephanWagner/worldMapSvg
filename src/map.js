@@ -9,7 +9,7 @@ const config = require("./config.js");
 // Debugging
 const debug = function (id) {
   return true;
-  // return id == "IE" || id == "GB-NIR" || id == "IE-NIR" || id == "IE-C";
+  return id == "DE" || id == "FR";
 };
 
 // Map data
@@ -138,7 +138,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     idsClean.push(id);
   }
 
-  if (idsClean.length >= 2) {
+  if (idsClean.length) {
     borderCache.push({
       ids: idsClean,
       type: borderType,
@@ -147,8 +147,6 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     });
   }
 }
-
-//dLog(borderCache);
 
 // Regular expression to match region polylines
 const regexPolylines =

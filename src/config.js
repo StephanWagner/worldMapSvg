@@ -43,7 +43,10 @@ module.exports = {
 
     // Great Britain
     "GB-EAS",     // England and Scotland
-    "GB-SAW"      // Scotland and Wales
+    "GB-SAW",     // Scotland and Wales
+
+    // Guernsey
+    "GG-I",         // Outer islands
   ],
 
   // Paths that need to be moved
@@ -119,6 +122,10 @@ module.exports = {
     "GB-SCT-A": { ids: [{ id: "GB-SCT" }] },
     "GB-ZET": { ids: [{ id: "GB-SCT" }] },
 
+    // Spain
+    "ES-ML": { ids: [{ id: "ES" }] },
+    "ES-IB": { ids: [{ id: "ES" }] },
+
     // Ireland, Northern Ireland
     "GB-NIR": {
       ids: [
@@ -161,6 +168,7 @@ module.exports = {
     "GB-SCT-A": { ids: [{ id: "GB-UK-SCT-C" }] },
     "GB-EAW": { ids: [{ id: "GB-UK-SCT-C", color: true }] },
 
+    // Isle of Man
     "IM": {
       ids: [
         { id: "GB-UK-ENG-C", color: true },
@@ -168,6 +176,23 @@ module.exports = {
         { id: "GB-UK-SCT-C", color: true }
       ]
     },
+
+    // Guernsey
+    "GG": {
+      ids: [
+        { id: "GG-A" },
+        { id: "GG-JE" },
+      ]
+    },
+    "GG-I": {
+      ids: [
+        { id: "GG-A" },
+        { id: "GG-JE" }
+      ]
+    },
+
+    // Jersey
+    "JE": { ids: [{ id: "GG-JE" }] },
 
     // Kiribati
     "KI-G": { ids: [{ id: "KI" }] },
