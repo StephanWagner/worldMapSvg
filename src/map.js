@@ -527,7 +527,7 @@ for (var id in data) {
 }
 
 // Log regions
-log("✓ " + regionMapCount + " Maps created: " + (regionLog.join(" | ")), "cyan");
+// log("✓ " + regionMapCount + " Maps created: " + (regionLog.join(" | ")), "cyan");
 
 // Generate combined paths
 for (const id in combineCache) {
@@ -566,7 +566,7 @@ for (const id in combineCache) {
 }
 
 // Log combined regions
-log("✓ " + combinedMapCount + " combined maps created: " + (combinedRegionLog.join(" | ")), "cyan");
+// log("✓ " + combinedMapCount + " combined maps created: " + (combinedRegionLog.join(" | ")), "cyan");
 
 // Generate world map file content
 let worldMapFileContent = getSvgStart(worldMapViewBox);
