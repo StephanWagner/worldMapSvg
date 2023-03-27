@@ -68,13 +68,14 @@ const regexPaths =
 // Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
 
-  // Clean up path
-  let path = match[2];
-  path = cleanUpPath(path, id);
 
   // Get ids
   const idsStr = match[1];
   const ids = idsStr.split("_x7C_");
+
+  // Clean up path
+  let path = match[2];
+  path = cleanUpPath(path, ids.join(','));
 
   for (let id of ids) {
     id = getCleanId(id);
