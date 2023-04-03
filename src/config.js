@@ -194,6 +194,10 @@ module.exports = {
     // Jersey
     "JE": { ids: [{ id: "GG-JE" }] },
 
+    // South Georgia and the South Sandwich Islands
+    "GS-SG": { ids: [{ id: "GS" }] },
+    "GS-SI": { ids: [{ id: "GS" }] },
+
     // Kiribati
     "KI-G": { ids: [{ id: "KI" }] },
     "KI-L": { ids: [{ id: "KI" }] },
