@@ -8,7 +8,7 @@ module.exports = {
   // Stroke options for file world-with-stroke.svg
   strokeWidth: 10,
   strokeColor: "#eee",
-  coloredPathColor: "#999",
+  coloredPathColor: "#bbb",
 
   // Border options
   borderSizes: {
