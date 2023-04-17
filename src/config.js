@@ -194,6 +194,55 @@ module.exports = {
     // Jersey
     "JE": { ids: [{ id: "GG-JE" }] },
 
+    // Indonesia
+    "ID-BA": {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-JW":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-KA":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-ML":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-PP":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-RI":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-SL":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+    "ID-SM":
+    {
+      ids: [
+        { id: "ID" },
+      ]
+    },
+
     // South Georgia and the South Sandwich Islands
     "GS-SG": { ids: [{ id: "GS" }] },
     "GS-SI": { ids: [{ id: "GS" }] },
