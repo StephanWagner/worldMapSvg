@@ -9,7 +9,7 @@ const config = require("./config.js");
 // Debugging
 const debug = function (id) {
   return true;
-  return id == "DE" || id == "FR";
+  // return id == "ZA" || id == "LS";
 };
 
 // Map data
@@ -89,7 +89,9 @@ for (const match of mapData.matchAll(regexPaths)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        pathsCut: [],
         polylines: [],
+        polygons: [],
       };
     }
     data[id].paths.push(path);
@@ -130,7 +132,9 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        pathsCut: [],
         polylines: [],
+        polygons: [],
       };
     }
     data[id].polylines.push(polyline);
@@ -176,10 +180,117 @@ for (const match of mapData.matchAll(regexPolylines)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        pathsCut: [],
         polylines: [],
+        polygons: [],
       };
     }
     data[id].polylines.push(polyline);
+  }
+}
+
+// Regular expression to match border polylines
+// We use borders first, so they are sorted first
+const regexPolygonBorderPolylines =
+  /<polygon id="map-border-polygon-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9_-]+)_x7C_([A-Za-z0-9_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="[0-9\.]+"[0-9a-z-="\. ]+points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+
+// Process region map polylines
+for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
+  const borderType = match[1];
+  const borderSize = match[2];
+  const polygon = cleanUpPolyline(match[5]);
+  const id = getCleanId(match[3]);
+  const idCut = getCleanId(match[4]);
+
+  // Debug
+  if (!debug(id)) {
+    continue;
+  }
+
+  let path = '';
+  let pSplit = polygon.split(" ");
+  let index = 0;
+  let lastPoint;
+
+  for (const point of pSplit) {
+    if (index == 0) {
+      path += "M" + point;
+      lastPoint = point;
+      index++;
+      continue;
+    }
+
+    if (index == pSplit.length - 1) {
+      path += "L" + point;
+      path += "z";
+      break;
+    }
+
+    const pointSplit = point.split(",");
+    const x = float(pointSplit[0]);
+    const y = float(pointSplit[1]);
+
+    const lastPointSplit = lastPoint.split(",");
+    const lastX = float(lastPointSplit[0]);
+    const lastY = float(lastPointSplit[1]);
+
+    const diffX = float(x - lastX);
+    const diffY = float(y - lastY);
+
+    // Line
+    if (diffX != 0 && diffY != 0) {
+      path += "l" + diffX + "," + diffY;
+    }
+
+    // Horizontal line
+    if (diffX != 0 && diffY == 0) {
+      path += "h" + diffX;
+    }
+
+    // Vertical line
+    if (diffX == 0 && diffY != 0) {
+      path += "v" + diffY;
+    }
+
+    lastPoint = point;
+
+    index++;
+  }
+
+  // Optimize
+  path = path.replace(/,-/g, "-");
+
+  // Cache
+  if (!data[id]) {
+    data[id] = {
+      paths: [],
+      pathsCut: [],
+      polylines: [],
+      polygons: [],
+    };
+  }
+  data[id].paths.push(path);
+  data[id].polygons.push(polygon);
+
+  borderCache.push({
+    ids: [id],
+    type: borderType,
+    size: borderSize,
+    polygon: polygon,
+    path: path,
+  });
+
+  // Take path away
+  if (idCut != 'XX') {
+    if (!data[idCut]) {
+      data[idCut] = {
+        paths: [],
+        pathsCut: [],
+        polylines: [],
+        polygons: [],
+      };
+    }
+    data[idCut].pathsCut.push(path);
   }
 }
 
@@ -446,7 +557,9 @@ for (var id in data) {
       if (!data[id]) {
         data[id] = {
           paths: [],
+          pathsCut: [],
           polylines: [],
+          polygons: [],
         };
       }
       data[id].paths.push(path);
@@ -454,6 +567,10 @@ for (var id in data) {
   }
 
   path = data[id].paths.join(" ");
+
+  if (data[id].pathsCut.length) {
+    path += " " + data[id].pathsCut.join(" ");
+  }
 
   // Add to combined cache
   addPathsToCombineCache(id, path);
@@ -465,7 +582,7 @@ for (var id in data) {
     // Generate region file content
     let regionFileContent = getSvgStart(viewBox);
     regionFileContent += "\n";
-    regionFileContent += '  <path d="' + path + '"/>';
+    regionFileContent += '  <path' + (data[id].pathsCut.length ? ' fill-rule="evenodd"' : '') + ' d="' + path + '"/>';
     regionFileContent += "\n";
     regionFileContent += "</svg>";
     regionFileContent += "\n";
@@ -506,7 +623,7 @@ for (var id in data) {
 
     // Generate world file content
     worldFileContent +=
-      '  <path data-map="' + id + '" d="' + worldMapPath + '"/>';
+      '  <path data-map="' + id + '"' + (data[id].pathsCut.length ? ' fill-rule="evenodd"' : '') + ' d="' + worldMapPath + '"/>';
     worldFileContent += "\n";
 
     worldFileStrokeContent +=
@@ -590,66 +707,70 @@ worldMapFileContentStroke += worldFileContent;
 for (const border of borderCache) {
   let path = "";
 
-  let pSplit = border.polyline.split(" ");
+  if (border.path) {
+    path = border.path;
+  } else {
+    let pSplit = border.polyline.split(" ");
 
-  // Improve compressed size
-  // Make sure the border is calculated from left to right as this is most likely the way the region shore is calculated
-  const pFirstSplit = pSplit[0].split(",");
-  let pFirst = {
-    x: pFirstSplit[0],
-    y: pFirstSplit[1],
-  };
+    // Improve compressed size
+    // Make sure the border is calculated from left to right as this is most likely the way the region shore is calculated
+    const pFirstSplit = pSplit[0].split(",");
+    let pFirst = {
+      x: pFirstSplit[0],
+      y: pFirstSplit[1],
+    };
 
-  const pLastSplit = pSplit[pSplit.length - 1].split(",");
-  let pLast = {
-    x: pLastSplit[0],
-    y: pLastSplit[1],
-  };
+    const pLastSplit = pSplit[pSplit.length - 1].split(",");
+    let pLast = {
+      x: pLastSplit[0],
+      y: pLastSplit[1],
+    };
 
-  if (float(pFirst.x) > float(pLast.x)) {
-    pSplit = pSplit.reverse();
-  }
+    if (float(pFirst.x) > float(pLast.x)) {
+      pSplit = pSplit.reverse();
+    }
 
-  let index = 0;
-  let lastPoint;
+    let index = 0;
+    let lastPoint;
 
-  for (const point of pSplit) {
-    if (index == 0) {
-      path += "M" + point;
+    for (const point of pSplit) {
+      if (index == 0) {
+        path += "M" + point;
+        lastPoint = point;
+        index++;
+        continue;
+      }
+
+      const pointSplit = point.split(",");
+      const x = float(pointSplit[0]);
+      const y = float(pointSplit[1]);
+
+      const lastPointSplit = lastPoint.split(",");
+      const lastX = float(lastPointSplit[0]);
+      const lastY = float(lastPointSplit[1]);
+
+      const diffX = float(x - lastX);
+      const diffY = float(y - lastY);
+
+      // Line
+      if (diffX != 0 && diffY != 0) {
+        path += "l" + diffX + "," + diffY;
+      }
+
+      // Horizontal line
+      if (diffX != 0 && diffY == 0) {
+        path += "h" + diffX;
+      }
+
+      // Vertical line
+      if (diffX == 0 && diffY != 0) {
+        path += "v" + diffY;
+      }
+
       lastPoint = point;
+
       index++;
-      continue;
     }
-
-    const pointSplit = point.split(",");
-    const x = float(pointSplit[0]);
-    const y = float(pointSplit[1]);
-
-    const lastPointSplit = lastPoint.split(",");
-    const lastX = float(lastPointSplit[0]);
-    const lastY = float(lastPointSplit[1]);
-
-    const diffX = float(x - lastX);
-    const diffY = float(y - lastY);
-
-    // Line
-    if (diffX != 0 && diffY != 0) {
-      path += "l" + diffX + "," + diffY;
-    }
-
-    // Horizontal line
-    if (diffX != 0 && diffY == 0) {
-      path += "h" + diffX;
-    }
-
-    // Vertical line
-    if (diffX == 0 && diffY != 0) {
-      path += "v" + diffY;
-    }
-
-    lastPoint = point;
-
-    index++;
   }
 
   // Optimize path
