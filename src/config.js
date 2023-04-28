@@ -17,7 +17,7 @@ module.exports = {
   },
 
   // Move amount when moving a path horizontally around the globe
-  moveConstantX: 1328,
+  moveConstantX: 1335,
 
   // Ignore on world map
   ignoreWorldMap: [
@@ -59,6 +59,9 @@ module.exports = {
     "UM-86",
     "UM-89",
     "UM-95",
+
+    // US Aleutian Islands
+    "US-ALI-W",
   ],
 
   // Combine paths to country
@@ -277,6 +280,10 @@ module.exports = {
     // Papua New Guinea
     "PG-ML": { ids: [{ id: "PG" }] },
     "PG-BA": { ids: [{ id: "PG" }] },
+
+    // US Aleutian Islands
+    "US-ALI-W": { ids: [{ id: "US-ALI" }] },
+    "US-ALI-E": { ids: [{ id: "US-ALI" }] },
 
     // United States Minor Outlying Islands
     "UM-67": { ids: [{ id: "UM" }] },
