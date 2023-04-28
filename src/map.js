@@ -59,6 +59,9 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
 
   // Cache path
   ignorePaths[id] = path;
+
+  // Add to combined cache
+  addPathsToCombineCache(id, path);
 }
 
 // Regular expression to match region paths
