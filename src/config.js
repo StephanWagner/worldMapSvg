@@ -33,7 +33,11 @@ module.exports = {
     "GB-UK",      // United Kingdom
     "GB-EAW",     // England and Wales
     "GB-EAS",     // England and Scotland
-    "GB-SAW"      // Scotland and Wales
+    "GB-SAW",     // Scotland and Wales
+
+    // US Aleutian Islands
+    "US-ALI-W",
+    "US-ALI-E",
   ],
 
   // Ignore creating file
@@ -47,6 +51,11 @@ module.exports = {
 
     // Guernsey
     "GG-I",         // Outer islands
+
+    // US Aleutian Islands
+    "US-ALI",
+    "US-ALI-W",
+    "US-ALI-E",
   ],
 
   // Paths that need to be moved
@@ -195,54 +204,58 @@ module.exports = {
     },
 
     // Jersey
-    "JE": { ids: [{ id: "GG-JE" }] },
+    "JE": {
+      ids: [
+        { id: "GG-JE" }
+      ]
+    },
 
     // Indonesia
     "ID-BA": {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-JW":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-KA":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-ML":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-PP":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-RI":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-SL":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
     "ID-SM":
     {
       ids: [
-        { id: "ID" },
+        { id: "ID", includeIgnore: true },
       ]
     },
 

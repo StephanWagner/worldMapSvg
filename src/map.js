@@ -21,10 +21,6 @@ let regionMapCount = 0;
 let combinedMapCount = 0;
 let worldMapCount = 0;
 
-// Log cache
-const regionLog = [];
-const combinedRegionLog = [];
-
 // Data
 let data = {};
 
@@ -40,7 +36,6 @@ let combineCache = {};
 let borderCache = [];
 
 // Get ignore paths
-let ignorePaths = {};
 const regexIgnorePaths =
   /<path id="map-ignore_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
@@ -57,11 +52,20 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
   let path = match[2];
   path = cleanUpPath(path, id);
 
-  // Cache path
-  ignorePaths[id] = path;
+  // Cache
+  if (!data[id]) {
+    data[id] = {
+      paths: [],
+      ignore: [],
+      pathsCut: [],
+      polylines: [],
+      polygons: [],
+    };
+  }
+  data[id].ignore.push(path);
 
   // Add to combined cache
-  addPathsToCombineCache(id, path);
+  addPathsToCombineCache(id, path, true);
 }
 
 // Regular expression to match region paths
@@ -70,7 +74,6 @@ const regexPaths =
 
 // Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
-
 
   // Get ids
   const idsStr = match[1];
@@ -92,6 +95,7 @@ for (const match of mapData.matchAll(regexPaths)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        ignore: [],
         pathsCut: [],
         polylines: [],
         polygons: [],
@@ -135,6 +139,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        ignore: [],
         pathsCut: [],
         polylines: [],
         polygons: [],
@@ -183,6 +188,7 @@ for (const match of mapData.matchAll(regexPolylines)) {
     if (!data[id]) {
       data[id] = {
         paths: [],
+        ignore: [],
         pathsCut: [],
         polylines: [],
         polygons: [],
@@ -267,6 +273,7 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   if (!data[id]) {
     data[id] = {
       paths: [],
+      ignore: [],
       pathsCut: [],
       polylines: [],
       polygons: [],
@@ -288,6 +295,7 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
     if (!data[idCut]) {
       data[idCut] = {
         paths: [],
+        ignore: [],
         pathsCut: [],
         polylines: [],
         polygons: [],
@@ -560,6 +568,7 @@ for (var id in data) {
       if (!data[id]) {
         data[id] = {
           paths: [],
+          ignore: [],
           pathsCut: [],
           polylines: [],
           polygons: [],
@@ -598,11 +607,15 @@ for (var id in data) {
   }
 
   // Get world map path
-  if (config.ignoreWorldMap.indexOf(id) === -1) {
+  if (
+    config.ignoreWorldMap.indexOf(id) === -1
+  ) {
     let worldMapPath = path;
 
-    if (ignorePaths[id]) {
-      worldMapPath += " " + ignorePaths[id];
+    if (data[id].ignore.length) {
+      for (const ignorePath of data[id].ignore) {
+        worldMapPath += " " + ignorePath;
+      }
     }
 
     const includedViewBox = getViewBox(worldMapPath);
@@ -644,11 +657,7 @@ for (var id in data) {
 
   // Count generated files
   regionMapCount++;
-  regionLog.push(id);
 }
-
-// Log regions
-// log("✓ " + regionMapCount + " Maps created: " + (regionLog.join(" | ")), "cyan");
 
 // Generate combined paths
 for (const id in combineCache) {
@@ -683,11 +692,7 @@ for (const id in combineCache) {
 
   // Count generated files
   combinedMapCount++;
-  combinedRegionLog.push(id);
 }
-
-// Log combined regions
-// log("✓ " + combinedMapCount + " combined maps created: " + (combinedRegionLog.join(" | ")), "cyan");
 
 // Generate world map file content
 let worldMapFileContent = getSvgStart(worldMapViewBox);
@@ -1068,11 +1073,16 @@ function movePath(path, moveX, moveY) {
   return newPaths.join(" ");
 }
 
-function addPathsToCombineCache(id, path) {
+function addPathsToCombineCache(id, path, isIgnore) {
   if (config.combine[id]) {
     for (const idData of config.combine[id].ids) {
       const combineId = idData.id;
       const hasColor = idData.color;
+      const includeIgnore = idData.includeIgnore;
+
+      if (isIgnore && !includeIgnore) {
+        return false;
+      }
 
       if (!combineCache[combineId]) {
         combineCache[combineId] = {
@@ -1080,6 +1090,7 @@ function addPathsToCombineCache(id, path) {
           coloredPaths: []
         };
       }
+      
       let combinePath = path;
 
       if (config.combineMove.indexOf(id) !== -1) {
