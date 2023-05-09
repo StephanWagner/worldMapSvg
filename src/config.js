@@ -38,6 +38,9 @@ module.exports = {
     // US Aleutian Islands
     "US-ALI-W",
     "US-ALI-E",
+
+    // Adaman and Nicobar Islands
+    "IN-AN"
   ],
 
   // Ignore creating file
