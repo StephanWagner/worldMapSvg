@@ -988,6 +988,12 @@ function cleanUpPath(path, id) {
       log("✗ Error: Curve in path detected (" + id + ")", "red");
       errorCount++;
     }
+
+    // Detect unclosed paths
+    if (pathItem.indexOf("z") == -1) {
+      log("✗ Error: Unclosed path detected (" + id + ")", "red");
+      errorCount++;
+    }
   });
 
   return path;
