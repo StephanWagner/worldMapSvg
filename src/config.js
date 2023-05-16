@@ -266,6 +266,10 @@ module.exports = {
     "GS-SG": { ids: [{ id: "GS" }] },
     "GS-SI": { ids: [{ id: "GS" }] },
 
+    // Japan
+    "JP-M": { ids: [{ id: "JP", includeIgnore: true }] },
+    "JP-RY": { ids: [{ id: "JP", includeIgnore: true }] },
+
     // Kiribati
     "KI-G": { ids: [{ id: "KI" }] },
     "KI-L": { ids: [{ id: "KI" }] },
@@ -276,7 +280,7 @@ module.exports = {
     "KN-N": { ids: [{ id: "KN" }] },
 
     // South Korea
-    "KR": { ids: [{ id: "KR" }] },
+    "KR-M": { ids: [{ id: "KR" }] },
     "KR-49": { ids: [{ id: "KR" }] },
 
     // Dominican Republic, Haiti
