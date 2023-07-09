@@ -91,8 +91,9 @@ module.exports = {
     "BQ-BO": { ids: [{ id: "BQ" }] },
     "BQ-SA": { ids: [{ id: "BQ" }] },
 
-    // China
-    "CN-HI": { ids: [{ id: "CN" }] },
+    // TODO China inclusive Hong Kong and Macau
+    // TODO China inclusive Hong Kong, Macau and Taiwan
+    // TODO CN-M China Mainland with Tibet
 
     // Dominican Republic, Haiti
     "DO": {
