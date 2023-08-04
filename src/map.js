@@ -1102,6 +1102,9 @@ function addPathsToCombineCache(id, path, isIgnore) {
       if (config.combineMove.indexOf(id) !== -1) {
         combinePath = movePath(path, config.moveConstantX, 0);
       }
+      if (config.combineMoveNeg.indexOf(id) !== -1) {
+        combinePath = movePath(path, config.moveConstantX * -1, 0);
+      }
       combineCache[combineId][hasColor ? 'coloredPaths' : 'paths'].push(combinePath);
     }
   }

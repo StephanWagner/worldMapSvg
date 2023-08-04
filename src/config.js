@@ -56,7 +56,6 @@ module.exports = {
     "GG-I",         // Outer islands
 
     // US Aleutian Islands
-    "US-ALI",
     "US-ALI-W",
     "US-ALI-E",
   ],
@@ -71,13 +70,29 @@ module.exports = {
     "UM-86",
     "UM-89",
     "UM-95",
+  ],
 
-    // US Aleutian Islands
-    "US-ALI-W",
+  // Paths that need to be moved to the left
+  combineMoveNeg: [
+    // Alaska, Aleutian Islands
+    "US-SLI",
+    "US-SMI",
+    "US-SGI",
+    "US-SPI",
+    "US-ALI-E",
   ],
 
   // Combine paths to country
   combine: {
+
+    // Alaska, Aleutian Islands
+    "US-ALI-W": { ids: [{ id: "US-ALI" }, { id: "US-AK" }] },
+    "US-ALI-E": { ids: [{ id: "US-ALI" }, { id: "US-AK" }] },
+    "US-AK-ML": { ids: [{ id: "US-AK" }] },
+    "US-SLI": { ids: [{ id: "US-AK" }] },
+    "US-SMI": { ids: [{ id: "US-AK" }] },
+    "US-SGI": { ids: [{ id: "US-AK" }] },
+    "US-SPI": { ids: [{ id: "US-AK" }] },
 
     // Antigua and Barbuda
     "AG-04": { ids: [{ id: "AG" }] },
@@ -301,10 +316,6 @@ module.exports = {
     // Papua New Guinea
     "PG-ML": { ids: [{ id: "PG" }] },
     "PG-BA": { ids: [{ id: "PG" }] },
-
-    // US Aleutian Islands
-    "US-ALI-W": { ids: [{ id: "US-ALI" }] },
-    "US-ALI-E": { ids: [{ id: "US-ALI" }] },
 
     // United States Minor Outlying Islands
     "UM-67": { ids: [{ id: "UM" }] },
