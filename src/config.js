@@ -149,6 +149,11 @@ module.exports = {
       ],
     },
 
+    // Italy
+    "IT-ML": { ids: [{ id: "IT" }] },
+    "IT-82": { ids: [{ id: "IT" }] },
+    "IT-88": { ids: [{ id: "IT" }] },
+
     // Scotland
     "GB-SCT-A": { ids: [{ id: "GB-SCT" }] },
     "GB-ZET": { ids: [{ id: "GB-SCT" }] },
