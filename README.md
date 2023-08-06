@@ -1,6 +1,6 @@
 # worldMapSvg
 
-A detailed SVG world map and single country maps including separated maps for autonomous regions, distinct island groups and disputed territories in the Miller cylindrical projection.
+A detailed SVG world map and single country maps including separated maps for autonomous regions, distinct island groups and disputed territories in the Miller cylindrical projection (ESRI:54003).
 
 ---
 
@@ -24,13 +24,11 @@ Borders between countries and territories need to be named `border_ID1|ID2` and 
 
 The maps are created using Adobe Illustrator with the help of following public map material:
 
-- Wikipedia: Miller cylindrical projection\
-  https://en.wikipedia.org/wiki/Miller_cylindrical_projection \
-  https://en.wikipedia.org/wiki/Miller_cylindrical_projection#/media/File:Miller_with_Tissot's_Indicatrices_of_Distortion.svg
+- Natural Earth Data
+  https://www.naturalearthdata.com
 
-- Library of Congress: Standard time zones of the world\
-  https://www.loc.gov/item/2012592861 \
-  https://maps.lib.utexas.edu/maps/world_maps/timezones_ref00.pdf
+- Wikipedia: Miller cylindrical projection\
+  https://upload.wikimedia.org/wikipedia/commons/a/ad/Blank_map_world_gmt.pdf
 
 - OpenStreetMap\
   https://www.openstreetmap.org
