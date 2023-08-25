@@ -1,6 +1,6 @@
 module.exports = {
   // Total of maps
-  totalMaps: 380,
+  totalMaps: 420,
 
   // Precision
   decimals: 3,
