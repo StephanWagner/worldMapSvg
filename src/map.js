@@ -980,18 +980,21 @@ function cleanUpPath(path, id) {
       pathItem.indexOf("v") === -1
     ) {
       log("✗ Error: Empty path detected (" + id + ")", "red");
+      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
 
     // Detect curves
     if (pathItem.indexOf("c") > -1) {
       log("✗ Error: Curve in path detected (" + id + ")", "red");
+      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
 
     // Detect unclosed paths
     if (pathItem.indexOf("z") == -1) {
       log("✗ Error: Unclosed path detected (" + id + ")", "red");
+      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
   });
