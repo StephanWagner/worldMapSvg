@@ -21,6 +21,12 @@ module.exports = {
 
   // Ignore on world map
   ignoreWorldMap: [
+    // United Arab Emirates
+    "AE",
+
+    // Somalia
+    "SO",
+
     // Cyprus
     "CY",         // Cypress combined
     "CY-GR-TR",   // Greek and Tyrkish Cypress
