@@ -198,11 +198,6 @@ for (const match of mapData.matchAll(regexPolylines)) {
   }
 }
 
-
-
-console.log(data.CO);
-
-
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexPolygonBorderPolylines =
