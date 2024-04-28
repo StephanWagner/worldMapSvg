@@ -70,7 +70,7 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
 
 // Regular expression to match region paths
 const regexPaths =
-  /<path id="[A-Za-z0-9\._-]+" data-name="~path_([A-Za-z0-9._-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="[A-Za-z0-9_-]+" data-name="~path_([A-Za-z0-9|_-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
@@ -111,7 +111,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexBorderPolylines =
-  /<polyline id="[A-Za-z0-9._-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9._-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
@@ -119,7 +119,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
   const borderSize = match[2];
   const polyline = cleanUpPolyline(match[4]);
   const idsStr = match[3];
-  const ids = idsStr.split(".");
+  const ids = idsStr.split("|");
   let idsClean = [];
 
   for (let id of ids) {
@@ -163,14 +163,14 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
 
 // Regular expression to match region polylines
 const regexPolylines =
-  /<polyline id="[A-Za-z0-9._-]+" data-name="~polyline_([A-Za-z0-9._-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolylines)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split(".");
+  const ids = idsStr.split("|");
 
   for (let id of ids) {
     id = getCleanId(id);
@@ -201,7 +201,7 @@ for (const match of mapData.matchAll(regexPolylines)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexPolygonBorderPolylines =
-  /<polygon id="[A-Za-z0-9\._-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9_-]+)_([A-Za-z0-9_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polygon id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9_-]+)_([A-Za-z0-9_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
