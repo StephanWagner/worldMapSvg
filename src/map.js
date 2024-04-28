@@ -37,7 +37,7 @@ let borderCache = [];
 
 // Get ignore paths
 const regexIgnorePaths =
-  /<path id="map-ignore_x5F_([A-Z0-9-]+)[_A-Za-z0-9]*" fill="#[A-Za-z0-9]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="[A-Za-z0-9._-]+" data-name="~ignore_([A-Z0-9-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 for (const match of mapData.matchAll(regexIgnorePaths)) {
   // Get the id
@@ -70,14 +70,14 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
 
 // Regular expression to match region paths
 const regexPaths =
-  /<path id="map-path_x5F_([A-Za-z0-9|_-]+)" fill="[A-Za-z0-9#]+" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="[A-Za-z0-9\._-]+" data-name="~path_([A-Za-z0-9._-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split("_x7C_");
+  const ids = idsStr.split(".");
 
   // Clean up path
   let path = match[2];
@@ -111,7 +111,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexBorderPolylines =
-  /<polyline id="map-border-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9|_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="[0-9\.]+"[0-9a-z-="\. ]+points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="[A-Za-z0-9._-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9._-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
@@ -119,7 +119,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
   const borderSize = match[2];
   const polyline = cleanUpPolyline(match[4]);
   const idsStr = match[3];
-  const ids = idsStr.split("_x7C_");
+  const ids = idsStr.split(".");
   let idsClean = [];
 
   for (let id of ids) {
@@ -163,14 +163,14 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
 
 // Regular expression to match region polylines
 const regexPolylines =
-  /<polyline id="map-polyline_x5F_([A-Za-z0-9|_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="[A-Za-z0-9._-]+" data-name="~polyline_([A-Za-z0-9._-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolylines)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split("_x7C_");
+  const ids = idsStr.split(".");
 
   for (let id of ids) {
     id = getCleanId(id);
@@ -198,10 +198,15 @@ for (const match of mapData.matchAll(regexPolylines)) {
   }
 }
 
+
+
+console.log(data.CO);
+
+
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexPolygonBorderPolylines =
-  /<polygon id="map-border-polygon-([a-z]+)-([a-z]+)_x5F_([A-Za-z0-9_-]+)_x7C_([A-Za-z0-9_-]+)" fill="none" stroke="#[A-Za-z0-9]+" stroke-width="[0-9\.]+" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="[0-9\.]+"[0-9a-z-="\. ]+points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polygon id="[A-Za-z0-9\._-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9_-]+)_([A-Za-z0-9_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
@@ -216,6 +221,7 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
     continue;
   }
 
+  // Create path
   let path = '';
   let pSplit = polygon.split(" ");
   let index = 0;
@@ -992,7 +998,7 @@ function cleanUpPath(path, id) {
     }
 
     // Detect unclosed paths
-    if (pathItem.indexOf("z") == -1) {
+    if (pathItem.indexOf("z") == -1 && pathItem.indexOf("Z") == -1) {
       log("✗ Error: Unclosed path detected (" + id + ")", "red");
       // TODO marker on map log(pathItem, "yellow");
       errorCount++;
@@ -1005,6 +1011,22 @@ function cleanUpPath(path, id) {
 // Clean up a polyline
 function cleanUpPolyline(polyline) {
   polyline = polyline.replace(/  |\t|\r\n|\n|\r/gm, "").trim();
+
+  // Fix when no commas used
+  if (!polyline.includes(',')) {
+    const points = polyline.split(/\s+/);
+    let pointsWithComma = [];
+    for (let i = 0; i < points.length; i += 2) {
+      if (points[i + 1]) {
+        pointsWithComma.push(points[i] + ',' + points[i + 1]);
+      } else {
+        pointsWithComma.push(points[i]);
+      }
+    }
+
+    polyline = pointsWithComma.join(' ');
+  }
+
   return polyline;
 }
 
@@ -1099,7 +1121,7 @@ function addPathsToCombineCache(id, path, isIgnore) {
           coloredPaths: []
         };
       }
-      
+
       let combinePath = path;
 
       if (config.combineMove.indexOf(id) !== -1) {
