@@ -41,6 +41,18 @@ module.exports = {
     "GB-EAS",     // England and Scotland
     "GB-SAW",     // Scotland and Wales
 
+    // Georgia
+    "GE",
+
+    // Moldova
+    "MD",
+
+    // Turkey
+    "TR",
+
+    // Ukraine
+    "UA",
+
     // US Aleutian Islands
     "US-ALI-W",
     "US-ALI-E",
@@ -154,6 +166,12 @@ module.exports = {
         { id: "CY-TR-C", color: true },
       ],
     },
+
+    // Greece
+    "GR-ML": { ids: [{ id: "GR" }] },
+    "GR-M": { ids: [{ id: "GR" }] },
+    "GR-F": { ids: [{ id: "GR" }] },
+    "GR-AE": { ids: [{ id: "GR" }] },
 
     // Italy
     "IT-ML": { ids: [{ id: "IT" }] },
@@ -338,6 +356,10 @@ module.exports = {
     "UM-86": { ids: [{ id: "UM" }] },
     "UM-89": { ids: [{ id: "UM" }] },
     "UM-95": { ids: [{ id: "UM" }] },
+
+    // Turkey
+    "TR-EU": { ids: [{ id: "TR" }] },
+    "TR-AS": { ids: [{ id: "TR" }] },
 
     // Venezuela
     "VE": { ids: [{ id: "VE" }] },
