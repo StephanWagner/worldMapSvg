@@ -77,7 +77,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split(".");
+  const ids = idsStr.split("|");
 
   // Clean up path
   let path = match[2];
@@ -970,10 +970,17 @@ function getViewBox(d) {
 // Clean up a path
 function cleanUpPath(path, id) {
   path = path.replace(/  |\t|\r\n|\n|\r/gm, "");
+  path = path.replace(/ZM/g, "Z M");
+  path = path.replace(/zM/g, "Z M");
 
   const paths = path.split(" ");
 
+  let cleanPaths = '';
+
   paths.forEach(function (pathItem) {
+    // Clean up paths
+    cleanPaths += recreateReadableSVGPath(pathItem, id) + " ";
+
     // Detect empty paths
     if (
       pathItem.indexOf("l") === -1 &&
@@ -981,26 +988,100 @@ function cleanUpPath(path, id) {
       pathItem.indexOf("v") === -1
     ) {
       log("✗ Error: Empty path detected (" + id + ")", "red");
-      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
 
     // Detect curves
     if (pathItem.indexOf("c") > -1) {
       log("✗ Error: Curve in path detected (" + id + ")", "red");
-      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
 
     // Detect unclosed paths
     if (pathItem.indexOf("z") == -1 && pathItem.indexOf("Z") == -1) {
       log("✗ Error: Unclosed path detected (" + id + ")", "red");
-      // TODO marker on map log(pathItem, "yellow");
       errorCount++;
     }
   });
 
-  return path;
+  return cleanPaths;
+}
+
+// Parse an SVG path
+function parseSVGPath(path, id) {
+  // Regular expression to find commands and their numbers
+  const commandRegex = /([a-zA-Z])([^a-zA-Z]*)/g;
+  const pathArray = [];
+  let match;
+
+  while ((match = commandRegex.exec(path)) !== null) {
+    const command = match[1];
+    const numberString = match[2].trim();
+    // Split numbers, taking into account possible negative signs
+    const numbers = numberString === "" ? [] : numberString.match(/-?\d*\.?\d+/g).map(Number);
+
+    // Group numbers into coordinate pairs or keep single based on command type
+    let coordinates = [];
+    if (command === 'H' || command === 'V' || command === 'h' || command === 'v') {
+      // For 'H', 'V', 'h', and 'v', each number is treated as a single coordinate
+      coordinates = numbers.map(n => [n]);
+    } else if (command === 's' || command === 'S') {
+      // For 's' and 'S', group every four numbers (two coordinate pairs)
+      for (let i = 0; i < numbers.length; i += 4) {
+        coordinates.push(numbers.slice(i, i + 4));
+      }
+    } else if (command === 'c' || command === 'C') {
+      // For 'c' and 'C', group every six numbers (three coordinate pairs)
+      for (let i = 0; i < numbers.length; i += 6) {
+        coordinates.push(numbers.slice(i, i + 6));
+      }
+    } else {
+      // For other commands like 'M' or 'L', pair the numbers
+      for (let i = 0; i < numbers.length; i += 2) {
+        coordinates.push(numbers.slice(i, i + 2));
+      }
+    }
+
+    pathArray.push({
+      command: command,
+      coordinates: coordinates
+    });
+  }
+
+  return pathArray;
+}
+
+function recreateReadableSVGPath(path, id) {
+  const pathArray = parseSVGPath(path);
+
+  let readablePath = '';
+
+  pathArray.forEach(item => {
+    if (item.coordinates.length === 0) {
+      // For commands like 'Z' with no coordinates
+      readablePath += `${item.command}`;
+    } else {
+      const command = item.command.toUpperCase();
+      item.coordinates.forEach(coord => {
+        // Append command and coordinates, ensuring use of commas
+        if (command === 'H' || command === 'V') {
+          // For horizontal and vertical commands, output each as separate commands
+          if (coord[0] !== 0) {
+            readablePath += `${item.command}${coord[0]}`;
+          }
+        } else if (command === 'S' || command === 'C') {
+          // Convert 's' and 'c' commands to 'l', use only the endpoint which is the last pair
+          const endPoint = coord.slice(-2);
+          readablePath += `l${endPoint.join(',')} `;
+        } else {
+          // For other commands, output each coordinate pair with a comma
+          readablePath += `${item.command}${coord.join(',')}`;
+        }
+      });
+    }
+  });
+
+  return readablePath.trim();
 }
 
 // Clean up a polyline
@@ -1041,10 +1122,12 @@ function movePath(path, moveX, moveY) {
       let val = match[2];
 
       val = val.replace(/-/g, ",-");
+      val = val.replace(/,,/g, ",");
 
       if (val.substring(0, 1) === ",") {
         val = val.substring(1);
       }
+
       val = val.split(",");
 
       let x;
