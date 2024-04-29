@@ -35,6 +35,22 @@ let combineCache = {};
 // Cache for borders
 let borderCache = [];
 
+// Errors when a border is a path
+const regexBorderErrorPaths =
+/<path id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
+
+for (const match of mapData.matchAll(regexBorderErrorPaths)) {
+  log("✗ Error: Polygon as path detected (~border-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
+}
+
+// Errors when a polyline is a path
+const regexPolylineErrorPaths =
+/<path id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)"/gu;
+
+for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
+  log("✗ Error: Polygon as path detected (~polyline_" + match[1] + ")", "red");
+}
+
 // Get ignore paths
 const regexIgnorePaths =
   /<path id="[A-Za-z0-9._-]+" data-name="~ignore_([A-Z0-9-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
@@ -266,9 +282,6 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
 
     index++;
   }
-
-  // Optimize
-  path = path.replace(/,-/g, "-");
 
   // Cache
   if (!data[id]) {
