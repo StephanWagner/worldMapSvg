@@ -174,7 +174,7 @@ module.exports = {
     "GR-AE": { ids: [{ id: "GR" }] },
 
     // Italy
-    "IT-ML": { ids: [{ id: "IT" }] },
+    "IT-ML": { ids: [{ id: "IT", hasEvenOdd: true }] },
     "IT-82": { ids: [{ id: "IT" }] },
     "IT-88": { ids: [{ id: "IT" }] },
 

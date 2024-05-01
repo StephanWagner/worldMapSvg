@@ -37,7 +37,7 @@ let borderCache = [];
 
 // Errors when a border is a path
 const regexBorderErrorPaths =
-/<path id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
 
 for (const match of mapData.matchAll(regexBorderErrorPaths)) {
   log("✗ Error: Polyline as path detected (~border-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
@@ -45,7 +45,7 @@ for (const match of mapData.matchAll(regexBorderErrorPaths)) {
 
 // Errors when a polygon border is a path
 const regexPolygonBorderErrorPaths =
-/<path id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolygonBorderErrorPaths)) {
   log("✗ Error: Polygon as path detected (~border-polygon-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
@@ -53,7 +53,7 @@ for (const match of mapData.matchAll(regexPolygonBorderErrorPaths)) {
 
 // Errors when a polyline is a path
 const regexPolylineErrorPaths =
-/<path id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
   log("✗ Error: Polyline as path detected (~polyline_" + match[1] + ")", "red");
@@ -225,15 +225,17 @@ for (const match of mapData.matchAll(regexPolylines)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexPolygonBorderPolylines =
-  /<polygon id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9_-]+)_([A-Za-z0-9_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polygon id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   const borderType = match[1];
   const borderSize = match[2];
-  const polygon = cleanUpPolyline(match[5]);
-  const id = getCleanId(match[3]);
-  const idCut = getCleanId(match[4]);
+  const polygon = cleanUpPolyline(match[4]);
+  const idsStr = match[3];
+  const ids = idsStr.split("|");
+  const id = ids[0];
+  const idCut = ids[1];
 
   // Debug
   if (!debug(id)) {
@@ -252,12 +254,6 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
       lastPoint = point;
       index++;
       continue;
-    }
-
-    if (index == pSplit.length - 1) {
-      path += "L" + point;
-      path += "z";
-      break;
     }
 
     const pointSplit = point.split(",");
@@ -289,6 +285,11 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
     lastPoint = point;
 
     index++;
+
+    if (index == pSplit.length) {
+      path += "z";
+      break;
+    }
   }
 
   // Cache
@@ -325,6 +326,9 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
     }
     data[idCut].pathsCut.push(path);
   }
+
+  // Add to combined cache
+  addPathsToCombineCache(idCut, path, false, true);
 }
 
 for (var id in data) {
@@ -577,15 +581,7 @@ for (var id in data) {
       }
 
       // Close path
-      path +=
-        "L" +
-        groupedPolylineGroup.sorted[0].first.x +
-        "," +
-        groupedPolylineGroup.sorted[0].first.y +
-        "z";
-
-      // Optimize
-      path = path.replace(/,-/g, "-");
+      path += "z";
 
       if (!data[id]) {
         data[id] = {
@@ -597,6 +593,9 @@ for (var id in data) {
         };
       }
       data[id].paths.push(path);
+
+      // Add to combined cache
+      addPathsToCombineCache(id, path);
     }
   }
 
@@ -605,9 +604,6 @@ for (var id in data) {
   if (data[id].pathsCut.length) {
     path += " " + data[id].pathsCut.join(" ");
   }
-
-  // Add to combined cache
-  addPathsToCombineCache(id, path);
 
   if (config.ignoreFile.indexOf(id) === -1) {
     // Get viewBox
@@ -683,8 +679,34 @@ for (var id in data) {
 
 // Generate combined paths
 for (const id in combineCache) {
-  const path = combineCache[id].paths.join(" ");
-  const coloredPath = combineCache[id].coloredPaths.join(" ");
+  let path = combineCache[id].paths.join(" ");
+  let coloredPath = combineCache[id].coloredPaths.join(" ");
+
+  if (id == 'IT') {
+      console.log(combineCache[id]);
+  }
+
+  if (combineCache[id].pathsCut && combineCache[id].pathsCut.length) {
+
+
+    if (combineCache[id].hasEvenOdd) {
+
+
+      if (id == 'IT') {
+        console.log(path);
+    }
+
+      path += ' ' + combineCache[id].pathsCut.join(" ");
+
+      if (id == 'IT') {
+        console.log(path);
+    }
+    }
+
+    if (combineCache[id].hasEvenOddColor) {
+      coloredPath += ' ' + combineCache[id].pathsCut.join(" ");
+    }
+  }
 
   // Get viewbox
   let viewBox = getViewBox(path);
@@ -697,10 +719,10 @@ for (const id in combineCache) {
   // Create file content
   let combinedFileContent = getSvgStart(viewBox);
   combinedFileContent += "\n";
-  combinedFileContent += '  <path d="' + path + '"/>';
+  combinedFileContent += '  <path' + (combineCache[id].hasEvenOdd ? ' fill-rule="evenodd"' : '') + ' d="' + path + '"/>';
   if (coloredPath) {
     combinedFileContent += "\n";
-    combinedFileContent += '  <path fill="' + config.coloredPathColor + '" d="' + coloredPath + '"/>';
+    combinedFileContent += '  <path ' + (combineCache[id].hasEvenOddColor ? ' fill-rule="evenodd"' : '') + ' fill="' + config.coloredPathColor + '" d="' + coloredPath + '"/>';
   }
   combinedFileContent += "\n";
   combinedFileContent += "</svg>";
@@ -802,9 +824,6 @@ for (const border of borderCache) {
       index++;
     }
   }
-
-  // Optimize path
-  path = path.replace(/,-/g, "-");
 
   let borderTypeAttr = "";
 
@@ -1195,7 +1214,7 @@ function movePath(path, moveX, moveY) {
       }
     }
 
-    newPath += "z";
+    newPath += "Z";
 
     newPaths.push(newPath);
   });
@@ -1203,11 +1222,12 @@ function movePath(path, moveX, moveY) {
   return newPaths.join(" ");
 }
 
-function addPathsToCombineCache(id, path, isIgnore) {
+function addPathsToCombineCache(id, path, isIgnore, isCut) {
   if (config.combine[id]) {
     for (const idData of config.combine[id].ids) {
       const combineId = idData.id;
       const hasColor = idData.color;
+      const hasEvenOdd = idData.hasEvenOdd;
       const includeIgnore = idData.includeIgnore;
 
       if (isIgnore && !includeIgnore) {
@@ -1217,7 +1237,8 @@ function addPathsToCombineCache(id, path, isIgnore) {
       if (!combineCache[combineId]) {
         combineCache[combineId] = {
           paths: [],
-          coloredPaths: []
+          coloredPaths: [],
+          pathsCut: []
         };
       }
 
@@ -1229,7 +1250,25 @@ function addPathsToCombineCache(id, path, isIgnore) {
       if (config.combineMoveNeg.indexOf(id) !== -1) {
         combinePath = movePath(path, config.moveConstantX * -1, 0);
       }
-      combineCache[combineId][hasColor ? 'coloredPaths' : 'paths'].push(combinePath);
+      if (
+        !combineCache[combineId].coloredPaths.includes(combinePath) &&
+        !combineCache[combineId].paths.includes(combinePath) &&
+        !combineCache[combineId].pathsCut.includes(combinePath)
+      ) {
+        if (isCut) {
+          combineCache[combineId].pathsCut.push(combinePath);
+        } else {
+          combineCache[combineId][hasColor ? 'coloredPaths' : 'paths'].push(combinePath);
+        }
+      }
+
+      if (hasEvenOdd) {
+        if (hasColor) {
+          combineCache[combineId].hasEvenOddColor = true;
+        } else {
+          combineCache[combineId].hasEvenOdd = true;
+        }
+      }
     }
   }
 }
