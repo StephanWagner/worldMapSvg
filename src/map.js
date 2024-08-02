@@ -682,25 +682,9 @@ for (const id in combineCache) {
   let path = combineCache[id].paths.join(" ");
   let coloredPath = combineCache[id].coloredPaths.join(" ");
 
-  if (id == 'IT') {
-      console.log(combineCache[id]);
-  }
-
   if (combineCache[id].pathsCut && combineCache[id].pathsCut.length) {
-
-
     if (combineCache[id].hasEvenOdd) {
-
-
-      if (id == 'IT') {
-        console.log(path);
-    }
-
       path += ' ' + combineCache[id].pathsCut.join(" ");
-
-      if (id == 'IT') {
-        console.log(path);
-    }
     }
 
     if (combineCache[id].hasEvenOddColor) {
