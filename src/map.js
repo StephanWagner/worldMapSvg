@@ -37,7 +37,7 @@ let borderCache = [];
 
 // Errors when a border is a path
 const regexBorderErrorPaths =
-  /<path id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="border(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexBorderErrorPaths)) {
   log("✗ Error: Polyline as path detected (~border-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
@@ -45,7 +45,7 @@ for (const match of mapData.matchAll(regexBorderErrorPaths)) {
 
 // Errors when a polygon border is a path
 const regexPolygonBorderErrorPaths =
-  /<path id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="border-inset(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolygonBorderErrorPaths)) {
   log("✗ Error: Polygon as path detected (~border-polygon-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
@@ -53,7 +53,7 @@ for (const match of mapData.matchAll(regexPolygonBorderErrorPaths)) {
 
 // Errors when a polyline is a path
 const regexPolylineErrorPaths =
-  /<path id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)"/gu;
+  /<path id="shore(?:-\d+)?:([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
   log("✗ Error: Polyline as path detected (~polyline_" + match[1] + ")", "red");
@@ -61,7 +61,7 @@ for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
 
 // Get ignore paths
 const regexIgnorePaths =
-  /<path id="[A-Za-z0-9._-]+" data-name="~ignore_([A-Z0-9-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="area-ignore(?:-\d+)?:([A-Za-z0-9.-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 for (const match of mapData.matchAll(regexIgnorePaths)) {
   // Get the id
@@ -94,14 +94,14 @@ for (const match of mapData.matchAll(regexIgnorePaths)) {
 
 // Regular expression to match region paths
 const regexPaths =
-  /<path id="[A-Za-z0-9_-]+" data-name="~path_([A-Za-z0-9|_-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="area(?:-\d+)?:([A-Za-z0-9.-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map paths
 for (const match of mapData.matchAll(regexPaths)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split("|");
+  const ids = idsStr.split(".");
 
   // Clean up path
   let path = match[2];
@@ -135,7 +135,7 @@ for (const match of mapData.matchAll(regexPaths)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexBorderPolylines =
-  /<polyline id="[A-Za-z0-9_-]+" data-name="~border-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="border(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexBorderPolylines)) {
@@ -143,7 +143,7 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
   const borderSize = match[2];
   const polyline = cleanUpPolyline(match[4]);
   const idsStr = match[3];
-  const ids = idsStr.split("|");
+  const ids = idsStr.split(".");
   let idsClean = [];
 
   for (let id of ids) {
@@ -187,14 +187,14 @@ for (const match of mapData.matchAll(regexBorderPolylines)) {
 
 // Regular expression to match region polylines
 const regexPolylines =
-  /<polyline id="[A-Za-z0-9_-]+" data-name="~polyline_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polyline id="shore(?:-\d+)?:([A-Za-z0-9.-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolylines)) {
 
   // Get ids
   const idsStr = match[1];
-  const ids = idsStr.split("|");
+  const ids = idsStr.split(".");
 
   for (let id of ids) {
     id = getCleanId(id);
@@ -225,7 +225,7 @@ for (const match of mapData.matchAll(regexPolylines)) {
 // Regular expression to match border polylines
 // We use borders first, so they are sorted first
 const regexPolygonBorderPolylines =
-  /<polygon id="[A-Za-z0-9_-]+" data-name="~border-polygon-([a-z]+)-([a-z]+)_([A-Za-z0-9|_-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<polygon id="border-inset(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)" points="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 // Process region map polylines
 for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
@@ -233,7 +233,7 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   const borderSize = match[2];
   const polygon = cleanUpPolyline(match[4]);
   const idsStr = match[3];
-  const ids = idsStr.split("|");
+  const ids = idsStr.split(".");
   const id = ids[0];
   const idCut = ids[1];
 
