@@ -29,8 +29,8 @@ module.exports = {
 
     // Cyprus
     "CY",         // Cypress combined
-    "CY-GR-TR",   // Greek and Tyrkish Cypress
-    "CY-GR-SBA",  // Greek Cypress with Akrotiri and Dhekelia
+    // TODO "CY-GR-TR",   // Greek and Tyrkish Cypress
+    // TODO "CY-GR-SBA",  // Greek Cypress with Akrotiri and Dhekelia
     "CY-SBA",     // Akrotiri and Dhekelia
 
     // Great Britain
@@ -64,18 +64,21 @@ module.exports = {
   // Ignore creating file
   ignoreFile: [
     // Cypress
-    "CY-GR-TR",   // Greek and Tyrkish Cypress
+    // TODO "CY-GR-TR",   // Greek and Tyrkish Cypress
 
     // Great Britain
     "GB-EAS",     // England and Scotland
     "GB-SAW",     // Scotland and Wales
 
     // Guernsey
-    "GG-I",         // Outer islands
+    "GG-OI",      // Outer islands
 
     // US Aleutian Islands
     "US-ALI-W",
     "US-ALI-E",
+
+    // Venezuela Mainland
+    "VE-ML",
   ],
 
   // Paths that need to be moved
@@ -143,29 +146,30 @@ module.exports = {
     },
 
     // Cypress
-    "CY-SBA": {
-      ids: [
-        { id: "CY-SBA-C" },
-      ]
-    },
-    "CY-GR-TR": {
-      ids: [
-        { id: "CY-SBA-C", color: true },
-      ],
-    },
+    // TODO 
+    // "CY-SBA": {
+    //   ids: [
+    //     { id: "CY-SBA-C" },
+    //   ]
+    // },
+    // "CY-GR-TR": {
+    //   ids: [
+    //     { id: "CY-SBA-C", color: true },
+    //   ],
+    // },
 
-    "CY-GR-SBA": {
-      ids: [
-        { id: "CY-GR-SBA-C", color: true },
-        { id: "CY-TR-C" }
-      ]
-    },
-    "CY-TR": {
-      ids: [
-        { id: "CY-GR-SBA-C" },
-        { id: "CY-TR-C", color: true },
-      ],
-    },
+    // "CY-GR-SBA": {
+    //   ids: [
+    //     { id: "CY-GR-SBA-C", color: true },
+    //     { id: "CY-TR-C" }
+    //   ]
+    // },
+    // "CY-TR": {
+    //   ids: [
+    //     { id: "CY-GR-SBA-C" },
+    //     { id: "CY-TR-C", color: true },
+    //   ],
+    // },
 
     // Greece
     "GR-ML": { ids: [{ id: "GR" }] },
@@ -240,13 +244,13 @@ module.exports = {
     // Guernsey
     "GG": {
       ids: [
-        { id: "GG-A" },
+        { id: "GG-I" },
         { id: "GG-JE" },
       ]
     },
-    "GG-I": {
+    "GG-OI": {
       ids: [
-        { id: "GG-A" },
+        { id: "GG-I" },
         { id: "GG-JE" }
       ]
     },
@@ -362,7 +366,7 @@ module.exports = {
     "TR-AS": { ids: [{ id: "TR" }] },
 
     // Venezuela
-    "VE": { ids: [{ id: "VE" }] },
+    "VE-ML": { ids: [{ id: "VE" }] },
     "VE-O": { ids: [{ id: "VE" }] },
 
     // Virgin Islands
