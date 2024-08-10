@@ -234,8 +234,8 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   const polygon = cleanUpPolyline(match[4]);
   const idsStr = match[3];
   const ids = idsStr.split(".");
-  const id = ids[0];
-  const idCut = ids[1];
+  const id = getCleanId(ids[0]);
+  const idCut = getCleanId(ids[1]);
 
   // Debug
   if (!debug(id)) {
@@ -306,7 +306,7 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   data[id].polygons.push(polygon);
 
   borderCache.push({
-    ids: [id],
+    ids: [idCut, id],
     type: borderType,
     size: borderSize,
     polygon: polygon,
