@@ -365,8 +365,6 @@ for (const match of mapData.matchAll(regexLakes)) {
     }
     data[id].pathsCut.push(path);
 
-    console.log(data[id]);
-
     // Add to combined cache
     addPathsToCombineCache(id, path, false, true);
   }
