@@ -331,6 +331,49 @@ for (const match of mapData.matchAll(regexPolygonBorderPolylines)) {
   addPathsToCombineCache(idCut, path, false, true);
 }
 
+// Lakes
+const regexLakes =
+  /<path id="lake(?:-\d+)?:([A-Za-z0-9.-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+
+// Process region map polylines
+for (const match of mapData.matchAll(regexLakes)) {
+  // Get ids
+  const idsStr = match[1];
+  const ids = idsStr.split(".");
+
+  // Clean up path
+  let path = match[2];
+  path = cleanUpPath(path, ids.join(','));
+  
+  for (let id of ids) {
+    id = getCleanId(id);
+
+    // Debug
+    if (!debug(id)) {
+      continue;
+    }
+
+    // Cache
+    if (!data[id]) {
+      data[id] = {
+        paths: [],
+        ignore: [],
+        pathsCut: [],
+        polylines: [],
+        polygons: [],
+      };
+    }
+    data[id].pathsCut.push(path);
+
+    console.log(data[id]);
+
+    // Add to combined cache
+    addPathsToCombineCache(id, path, false, true);
+  }
+}
+
+
+// Process data
 for (var id in data) {
   id = getCleanId(id);
 
