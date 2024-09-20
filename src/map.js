@@ -40,7 +40,7 @@ const regexBorderErrorPaths =
   /<path id="border(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexBorderErrorPaths)) {
-  log("✗ Error: Polyline as path detected (~border-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
+  log("✗ Error: Polyline as path detected (border" + (match[0] ? '-' + match[0] : '') + "-" + match[1] + "-" + match[2] + ":" + match[3] + ")", "red");
 }
 
 // Errors when a polygon border is a path
@@ -48,7 +48,7 @@ const regexPolygonBorderErrorPaths =
   /<path id="border-inset(?:-\d+)?-([a-z]+)-([a-z]+):([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolygonBorderErrorPaths)) {
-  log("✗ Error: Polygon as path detected (~border-polygon-" + match[1] + "-" + match[2] + "_" + match[3] + ")", "red");
+  log("✗ Error: Polygon as path detected (border-inset" + (match[0] ? '-' + match[0] : '') + "-" + match[1] + "-" + match[2] + ":" + match[3] + ")", "red");
 }
 
 // Errors when a polyline is a path
@@ -56,7 +56,7 @@ const regexPolylineErrorPaths =
   /<path id="shore(?:-\d+)?:([A-Za-z0-9.-]+)"/gu;
 
 for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
-  log("✗ Error: Polyline as path detected (~polyline_" + match[1] + ")", "red");
+  log("✗ Error: Polyline as path detected (shore" + (match[0] ? '-' + match[0] : '') + ":" + match[1] + ")", "red");
 }
 
 // Get ignore paths
