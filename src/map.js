@@ -945,7 +945,7 @@ if (pathElements) {
 
 log('i Paths: ' + totalPaths, 'cyan');
 log('i Sub-Paths: ' + totalSubPaths, 'cyan');
-log('i Points: ' + totalPoints + '()', 'cyan');
+log('i Points: ' + totalPoints, 'cyan');
 
 // Done message
 const mapsDone = regionMapCount + "/" + config.totalMaps;
