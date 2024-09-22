@@ -909,9 +909,43 @@ log("✓ World map with stroke (" + fileSizeStroke + ") (" + compressedFilesizeS
 worldMapCount++;
 
 // Success messages
-log("✓ " + regionMapCount + " individual maps generated", "green");
-log("✓ " + combinedMapCount + " combined maps generated", "green");
-log("✓ " + worldMapCount + " world maps generated", "green");
+log("✓ " + regionMapCount + " individual maps created", "green");
+log("✓ " + combinedMapCount + " combined maps created", "green");
+log("✓ " + worldMapCount + " world maps created", "green");
+
+// Statistics
+const statData = fs.readFileSync(wordMapFilename, 'utf8');
+
+// Extract all <path> elements
+const pathElements = statData.match(/<path\b[^>]*>/g);
+
+let totalPaths = 0;
+let totalSubPaths = 0;
+let totalPoints = 0;
+
+if (pathElements) {
+  totalPaths = pathElements.length; // Total number of <path> elements
+
+  pathElements.forEach((path) => {
+    // Extract the `d` attribute
+    const d = path.match(/d="([^"]+)"/);
+    if (d) {
+      // Count sub-paths (each new `M` or `m` command starts a new sub-path)
+      const subPaths = d[1].split(/[Mm]/).filter(Boolean);
+      totalSubPaths += subPaths.length;
+
+      // Count points (M, L, m, l commands followed by coordinates)
+      const commands = d[1].match(/[MLml]\s*[\d.,-]+/g);
+      if (commands) {
+        totalPoints += commands.length;
+      }
+    }
+  });
+}
+
+log('i Paths: ' + totalPaths, 'cyan');
+log('i Sub-Paths: ' + totalSubPaths, 'cyan');
+log('i Points: ' + totalPoints + '()', 'cyan');
 
 // Done message
 const mapsDone = regionMapCount + "/" + config.totalMaps;
