@@ -13,7 +13,7 @@ module.exports = {
   // Border options
   borderSizes: {
     m: 0.05,
-    s: 0.015,
+    s: 0.025,
   },
 
   // Move amount when moving a path horizontally around the globe
@@ -24,6 +24,23 @@ module.exports = {
     // United Arab Emirates
     "AE",
 
+    // Antigua and Barbuda
+    "AG",
+    "AG-RI",
+
+    // Anguilla
+    "AI-SI",
+
+    // Angola
+    "AO-ICAB",
+
+    
+
+
+
+
+
+    
     // Somalia
     "SO",
 
@@ -63,6 +80,18 @@ module.exports = {
 
   // Ignore creating file
   ignoreFile: [
+    // Antigua and Barbuda
+    "AG-11",
+
+    // Anguilla
+    "AI-SOM",
+
+    // Chile
+    "CL-IDR",
+
+
+
+
     // Cypress
     // TODO "CY-GR-TR",   // Greek and Tyrkish Cypress
 
@@ -114,10 +143,6 @@ module.exports = {
     "US-SMI": { ids: [{ id: "US-AK" }] },
     "US-SGI": { ids: [{ id: "US-AK" }] },
     "US-SPI": { ids: [{ id: "US-AK" }] },
-
-    // Antigua and Barbuda
-    "AG-04": { ids: [{ id: "AG" }] },
-    "AG-10": { ids: [{ id: "AG" }] },
 
     // Australia
     "AU-ML": { ids: [{ id: "AU" }] },

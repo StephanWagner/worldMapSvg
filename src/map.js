@@ -5,6 +5,8 @@ const zlib = require("zlib");
 const util = require('util')
 
 const config = require("./config.js");
+const regionNames = require("./config-region-names.js");
+const countries = require("./config-countries.js");
 
 // Debugging
 const debug = function (id) {
@@ -24,7 +26,7 @@ let worldMapCount = 0;
 // Data
 let data = {};
 
-// Word map data
+// World map data
 let worldFileContent = "";
 let worldFileStrokeContent = "";
 let worldMapViewBox = getMinMaxObj();
@@ -660,7 +662,7 @@ for (var id in data) {
 
     // Write region file
     fs.writeFileSync(
-      __dirname + "/../maps/regions/" + id + ".svg",
+      __dirname + "/../maps/regions/" + getFilename(id),
       regionFileContent
     );
   }
@@ -671,11 +673,11 @@ for (var id in data) {
   ) {
     let worldMapPath = path;
 
-    if (data[id].ignore.length) {
-      for (const ignorePath of data[id].ignore) {
-        worldMapPath += " " + ignorePath;
-      }
-    }
+    // if (data[id].ignore.length) {
+    //   for (const ignorePath of data[id].ignore) {
+    //     worldMapPath += " " + ignorePath;
+    //   }
+    // }
 
     const includedViewBox = getViewBox(worldMapPath);
 
@@ -698,11 +700,11 @@ for (var id in data) {
 
     // Generate world file content
     worldFileContent +=
-      '  <path data-map="' + id + '"' + (data[id].pathsCut.length ? ' fill-rule="evenodd"' : '') + ' d="' + worldMapPath + '"/>';
+      '  <path data-id="' + id + '" data-country="' + (countries[id] ? countries[id] : id) + '"' + (regionNames[id] ? ' data-name="' + regionNames[id] + '"' : '') + (data[id].pathsCut.length ? ' fill-rule="evenodd"' : '') + ' d="' + worldMapPath + '"/>';
     worldFileContent += "\n";
 
     worldFileStrokeContent +=
-      '  <path data-map="' +
+      '  <path data-id="' +
       id +
       '" stroke="' +
       config.strokeColor +
@@ -755,12 +757,22 @@ for (const id in combineCache) {
 
   // Write region file
   fs.writeFileSync(
-    __dirname + "/../maps/regions/" + id + ".svg",
+    __dirname + "/../maps/regions/" + getFilename(id),
     combinedFileContent
   );
 
   // Count generated files
   combinedMapCount++;
+}
+
+function getFilename(id) {
+  let regionName = regionNames[id] ? regionNames[id] : '';
+
+  if (regionName) {
+    regionName = regionName.replace(/ /g, "_");
+  }
+
+  return id + (regionName ? '_' + regionName : '') + ".svg";
 }
 
 // Generate world map file content
@@ -884,14 +896,14 @@ worldMapFileContentStroke += "</svg>";
 worldMapFileContentStroke += "\n";
 
 // Write world map file
-const wordMapFilename = __dirname + "/../maps/world.svg";
-fs.writeFileSync(wordMapFilename, worldMapFileContent);
+const worldMapFilename = __dirname + "/../maps/world.svg";
+fs.writeFileSync(worldMapFilename, worldMapFileContent);
 
-const wordMapFilenameStroke = __dirname + "/../maps/world-with-stroke.svg";
-fs.writeFileSync(wordMapFilenameStroke, worldMapFileContentStroke);
+const worldMapFilenameStroke = __dirname + "/../maps/world-with-stroke.svg";
+fs.writeFileSync(worldMapFilenameStroke, worldMapFileContentStroke);
 
 // World map success messages
-const fileSize = getFilesize(wordMapFilename);
+const fileSize = getFilesize(worldMapFilename);
 const compressedFilesize = getCompressedFilesize(worldMapFileContent);
 
 log("✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)", "yellow");
@@ -899,7 +911,7 @@ log("✓ World map (" + fileSize + ") (" + compressedFilesize + " compressed)", 
 worldMapCount++;
 
 // Worls map with stroke success message
-const fileSizeStroke = getFilesize(wordMapFilenameStroke);
+const fileSizeStroke = getFilesize(worldMapFilenameStroke);
 const compressedFilesizeStroke = getCompressedFilesize(
   worldMapFileContentStroke
 );
@@ -914,7 +926,7 @@ log("✓ " + combinedMapCount + " combined maps created", "green");
 log("✓ " + worldMapCount + " world maps created", "green");
 
 // Statistics
-const statData = fs.readFileSync(wordMapFilename, 'utf8');
+const statData = fs.readFileSync(worldMapFilename, 'utf8');
 
 // Extract all <path> elements
 const pathElements = statData.match(/<path\b[^>]*>/g);
