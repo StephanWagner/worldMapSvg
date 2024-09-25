@@ -63,7 +63,7 @@ for (const match of mapData.matchAll(regexPolylineErrorPaths)) {
 
 // Get ignore paths
 const regexIgnorePaths =
-  /<path id="area-ignore(?:-\d+)?:([A-Za-z0-9.-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
+  /<path id="ignore(?:-\d+)?:([A-Za-z0-9.-]+)" d="([A-Za-z0-9,.\r\n\t\s-]+)"/gu;
 
 for (const match of mapData.matchAll(regexIgnorePaths)) {
   // Get the id
@@ -673,11 +673,11 @@ for (var id in data) {
   ) {
     let worldMapPath = path;
 
-    // if (data[id].ignore.length) {
-    //   for (const ignorePath of data[id].ignore) {
-    //     worldMapPath += " " + ignorePath;
-    //   }
-    // }
+    if (data[id].ignore.length) {
+      for (const ignorePath of data[id].ignore) {
+        worldMapPath += " " + ignorePath;
+      }
+    }
 
     const includedViewBox = getViewBox(worldMapPath);
 

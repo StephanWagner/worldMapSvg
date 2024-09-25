@@ -34,13 +34,43 @@ module.exports = {
     // Angola
     "AO-ICAB",
 
-    
+    // Australia
+    'AU',
+
+    // Azerbaijan
+    "AZ",
+
+    // Bosnia and Herzegovina
+    "BA",
+
+    // Bahrain
+    "BH",
+
+    // Caribbean Netherlands
+    "BQ",
+
+    // Brazil
+    "BR",
+
+    // Canada
+    "CA",
+    "CA-CAA",
+    "CA-PI",
+
+
+
+
+    // Finland
+    'FI',
 
 
 
 
 
-    
+
+
+
+
     // Somalia
     "SO",
 
@@ -86,8 +116,12 @@ module.exports = {
     // Anguilla
     "AI-SOM",
 
-    // Chile
-    "CL-IDR",
+    // Australia
+    "AU-ML",
+
+    // Bahrain
+    "BH-HI",
+
 
 
 
@@ -145,12 +179,12 @@ module.exports = {
     "US-SPI": { ids: [{ id: "US-AK" }] },
 
     // Australia
-    "AU-ML": { ids: [{ id: "AU" }] },
-    "AU-TAS": { ids: [{ id: "AU" }] },
+    //"AU-ML": { ids: [{ id: "AU" }] },
+    //"AU-TAS": { ids: [{ id: "AU" }] },
 
     // Caribbean Netherlands
-    "BQ-BO": { ids: [{ id: "BQ" }] },
-    "BQ-SA": { ids: [{ id: "BQ" }] },
+    // "BQ-BO": { ids: [{ id: "BQ" }] },
+    // "BQ-SA": { ids: [{ id: "BQ" }] },
 
     // TODO China inclusive Hong Kong and Macau
     // TODO China inclusive Hong Kong, Macau and Taiwan
