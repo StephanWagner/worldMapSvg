@@ -91,6 +91,10 @@ module.exports = {
     // Georgia
     "GE",
 
+    // Morocco
+    "MA-EH",
+    "MA-ES-PDS",
+
     // Moldova
     "MD",
 

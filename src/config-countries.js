@@ -73,7 +73,7 @@ module.exports = {
   "CA-EGI": "CA",
   "CA-MVI": "CA",
   "CA-EMI": "CA",
-  "CA-BAI": "CA",
+  "CA-BTI": "CA",
   "CA-CAI": "CA",
   "CA-VAI": "CA",
   "CA-BHI": "CA",
